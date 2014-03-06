@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+	<ui:style>
+	/*** style reset ***/
+	html, body, div, h1, h2, h3, h4, h5, h6, p, img, dl, dt, dd, ol, ul, li, table, tr, td, form, object, embed, article, aside, canvas, command, details, fieldset, figcaption, figure, footer, group, header, hgroup, legend, mark, menu, meter, nav, output, progress, section, summary, time, audio, video {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	
+	.wrapper {
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		font-size: 10pt;
+		color: #333;
+		line-height: 1;
+		
+		position: absolute;
+		height: 100%;
+		min-width: 100%;
+		min-height: 100%;
+		
+		overflow: auto;
+	}
+	.wrapper ol, ul {
+		list-style: none;
+		line-height: 17px;
+		margin: 0 0 1em;
+	}
+	.wrapper li {
+		margin: 0 0 .5em;
+	}
+	.wrapper div {
+		/* display: block; */
+	}
+	.wrapper a {
+		color: #307fbc;
+		text-decoration: none;
+	}
+	.wrapper a:hover {
+		color: #f1831e;
+		text-decoration: none;
+	}
+	.wrapper p, h1, h2 {
+		padding: 0 0 15px 0;
+	}
+	.wrapper h1 {
+		font-size: 18pt;
+		font-weight: normal;
+		text-shadow: 0px -1px 1px #FFF;
+	}
+	.wrapper h2 {
+		font-size: 10pt;
+		font-weight: bold;
+		text-shadow: 0px -1px 1px #FFF;
+	}
+	
+	/*** top panel ***/
+	.ohmage-header-bar {
+		background-image: url('images/theme-ohmage/login-header-bg.png');
+		background-repeat: repeat-x;
+		height: 117px;
+		/* TODO: shadow; fix background, fix bottom border shadow */
+		overflow: hidden;
+	}
+	.header-box {
+		width: auto;
+		max-width: 900px;
+		min-width: 750px;
+		margin: 0 auto;
+		height: 105px;
+		padding-top: 18px;
+	}
+	.logo {
+		height: 79px;
+	}
+	
+	/*** main container ***/
+	.main {
+		width: auto;
+		max-width: 900px;
+		min-width: 750px;
+		margin: 0 auto;
+		padding-top: 15px;
+	}
+	.content {
+		padding-left: 50px;
+		padding-right: 50px;
+	}
+	.clearfix::after {
+		visibility: hidden;
+		display: block;
+		font-size: 0;
+		content: '.';
+		clear: both;
+		height: 0;
+	}
+	
+	/*** registration panel ***/
+	.registration-panel {
+		padding-bottom: 10px;
+	}
+	/*
+	.registration-box {
+		padding: 20px;
+		background: #f4f9fd;
+		border: 1px solid #d2eafd;
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		-khtml-border-radius: 2px;
+		border-radius: 2px;
+		
+		margin-bottom: 10px;
+	}
+	*/
+	
+	/*** left panel ***/
+	.registration-left {
+		margin: 0 325px 0 0;
+		height: auto;
+		
+		padding: 20px;
+		background: #f4f9fd;
+		border: 1px solid #d2eafd;
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		-khtml-border-radius: 2px;
+		border-radius: 2px;
+		margin-bottom: 10px;
+	}
+	/*** right panel ***/
+	.registration-right {
+		width: 280px;
+		height: auto;
+		float: right;
+		
+		padding: 20px;
+		color: #75818A;
+		/*
+		background: #f4f9fd;
+		border: 1px solid #d2eafd;
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		-khtml-border-radius: 2px;
+		border-radius: 2px;
+		*/
+		margin-bottom: 10px;
+	}
+	
+	/*** registration elements ***/
+	.error-box {
+		color: #FF4E10;
+		background-color: #FDFBFA;
+		padding: 10px;
+		margin-bottom: 20px;
+		border: 1px solid #FFA788;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		border-radius: 5px;
+		-moz-box-shadow: 0px 0px 10px rgba(255,20,0,0.2);
+		-webkit-box-shadow: 0px 0px 10px rgba(255,20,0,0.2);
+		box-shadow: 0px 0px 10px rgba(255,20,0,0.2);
+	}
+	.input-label {
+		font-size: 12pt;
+		font-weight: normal;
+		text-shadow: 0 -1px 1px white;
+		padding-bottom: 8px;
+	}
+	.input-box, .tos-box {
+		width: 515px;
+		border-width: 1px;
+		border-style: solid;
+		border-color: #C6D9E9;
+		/* margin-bottom: 4px; */
+	}
+	.input-box {
+		font-size: 12pt;
+		height: 30px;
+		padding: 4px 4px 4px 10px;
+		border-width: 1px;
+		border-style: solid;
+		border-color: #C6D9E9;
+		margin-bottom: 4px;
+	}
+	.recaptcha-box {
+		background-color: white;
+		padding: 10px;
+		
+		border: 1px solid #C6D9E9;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		-khtml-border-radius: 5px;
+		border-radius: 5px;
+	}
+	.tos-box {
+		font-family: 'Courier New', Courier, monospace;
+		font-size: 11px;
+		height: 200px;
+		padding: 4px 4px 4px 10px;
+	}
+	
+	.register-button, .register-loading {
+		height: 40px;
+	}
+	.register-button {
+		background-image: url(images/theme-ohmage/login-button-bg.png);
+		background-repeat: repeat-x;
+		
+		width: 250px;
+		font-size: 16px;
+		font-weight: bold;
+		color: white;
+		text-shadow: 0 -1px 1px #666;
+		text-align: center;
+		margin-bottom: 10px;
+		box-shadow: 0px 1px 16px rgba(4,180,246,0.6);
+	}
+	.register-loading {
+		vertical-align: middle;
+		margin-left: 10px;
+	}
+	
+	/*** submission panel ***/
+	.submission-panel {
+		padding-bottom: 10px;
+	}
+	.submission-box {
+		padding: 20px;
+		background: #f4f9fd;
+		border: 1px solid #d2eafd;
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		-khtml-border-radius: 2px;
+		border-radius: 2px;
+	}
+	.submission-text {
+		font-size: 16px;
+		color: #666;
+		font-family: Georgia, serif;
+		font-style: italic;
+		padding-bottom: 24px;
+	}
+	
+	/*** footer panel ***/
+	.ohmage-fullwidth-panel {	/* footer panel */
+		padding-top: 10px;
+		position: block;
+		width: 100%;
+		overflow: hidden;
+	}
+	.footer-box {
+		padding-top: 10px;
+		white-space: nowrap;
+		border-top: 1px solid #AAA;
+	}
+	.footer-box ul {
+		float: left;
+		display: inline;
+		color: #AAA;
+	}
+	.footer-box ul li {
+		display: inline;
+		padding-right: 0px;
+	}
+	
+	/*** toolbox styles ***/
+	.float-right {
+		float: right;
+		text-align: right;
+	}
+	.helpPanelSpecialChars {
+      margin: auto;
+    }
+    .helpPanelSpecialChars td {
+      border: solid thin #DDD;
+      margin: 0px;
+      padding: 0px 3px;
+    }
+  </ui:style>
+
+	<g:HTMLPanel addStyleNames='{style.wrapper}'>
+
+		<!-- HEADER BAR -->
+		<g:HTMLPanel addStyleNames='{style.ohmage-header-bar}'>
+			<g:HTMLPanel addStyleNames='{style.header-box} {style.content} {style.clearfix}'>
+				<g:Image addStyleNames='{style.logo}' url="images/theme-ohmage/login-logo.png" />
+			</g:HTMLPanel>
+		</g:HTMLPanel>
+
+		<g:HTMLPanel addStyleNames='{style.main} {style.content} {style.clearfix}'>
+			<!-- BACK TO LOGIN PAGE LINK -->
+			<g:Hyperlink targetHistoryToken='login'>&#8592; Back to ohmage login</g:Hyperlink>
+			
+			<!-- REGISTRATION PANEL -->
+			<g:HTMLPanel ui:field='registrationPanel' addStyleNames='{style.ohmage-fullwidth-panel} {style.registration-panel}'>
+				<!-- TITLE TEXT -->
+				<h1>Create your ohmage account in seconds</h1>
+				<h2><g:Hyperlink targetHistoryToken='login'>Already have an account?</g:Hyperlink></h2>
+				
+				<!-- REGISTRATION FORM -->
+				<g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-right}'>
+						Your username must be 4 ~ 25 characters long and begin with a letter. You may use alphanumeric and special characters: 
+						<g:HTMLPanel addStyleNames='{style.helpPanelSpecialChars}'>
+							<g:Grid><g:row>
+								<g:cell>.</g:cell><g:cell>_</g:cell><g:cell>@</g:cell><g:cell>+</g:cell><g:cell>-</g:cell>
+							</g:row></g:Grid>
+						</g:HTMLPanel>
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-left}'>
+						<g:Label addStyleNames='{style.input-label}'>Username:</g:Label>
+						<g:TextBox ui:field='username' addStyleNames='{style.input-box}' />
+					</g:HTMLPanel>
+				</g:HTMLPanel>
+				<g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-right}'>
+						Your password must be 8 ~ 16 characters long and contain at least:<br/>
+						- one lower case letter,<br/>
+						- one upper case letter,<br/>
+						- one number, AND<br/>
+						- one special character: 
+						<g:HTMLPanel addStyleNames='{style.helpPanelSpecialChars}'>
+							<g:Grid><g:row>
+								<g:cell>,</g:cell><g:cell>.</g:cell><g:cell>&#60;</g:cell><g:cell>&#62;</g:cell><g:cell>!</g:cell><g:cell>@</g:cell><g:cell>#</g:cell><g:cell>$</g:cell><g:cell>%</g:cell><g:cell>^</g:cell><g:cell>&amp;</g:cell><g:cell>*</g:cell><g:cell>+</g:cell><g:cell>-</g:cell><g:cell>:</g:cell>
+							</g:row></g:Grid>
+						</g:HTMLPanel>
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-left}'>
+						<g:Label addStyleNames='{style.input-label}'>Password:</g:Label>
+						<g:PasswordTextBox ui:field='password' addStyleNames='{style.input-box}' />
+						<g:Label addStyleNames='{style.input-label}'>Confirm:</g:Label>
+						<g:PasswordTextBox ui:field='passwordConfirm' addStyleNames='{style.input-box}' />
+					</g:HTMLPanel>
+				</g:HTMLPanel>
+				<g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-right}'>
+						Your email address (e.g. fake@example.com). We will send you a verification email to this address after you register.
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-left}'>
+						<g:Label addStyleNames='{style.input-label}'>Email Address:</g:Label>
+						<g:TextBox ui:field='email' addStyleNames='{style.input-box}' />
+					</g:HTMLPanel>
+				</g:HTMLPanel>
+				<g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-right}'>
+						Type in the letters you see in the ReCaptcha image. If you have trouble, try refreshing the captcha to see another image.
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-left}'>
+						<g:Label addStyleNames='{style.input-label}'>Are you human?</g:Label>
+						<g:HTMLPanel ui:field='recaptchaContainer' addStyleNames='{style.recaptcha-box}'></g:HTMLPanel>
+					</g:HTMLPanel>
+				</g:HTMLPanel>
+				<g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-right}'>
+						Please review the terms of service carefully. You must agree to these terms in order to register.
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-left}'>
+						<g:Label addStyleNames='{style.input-label}'>Terms of Service:</g:Label>
+						<g:TextArea ui:field='tos' height="200px" addStyleNames='{style.tos-box}'>Loading terms of service...</g:TextArea>
+						<br/><br/>
+						<g:CheckBox ui:field='agree' addStyleNames='{style.input-label}'> I agree to the terms of service</g:CheckBox>
+						<br/><br/>
+						
+						<!-- ERROR MSG TEXT -->
+						<g:Label ui:field='errorText' addStyleNames='{style.error-box}'></g:Label>
+						<g:HorizontalPanel verticalAlignment="middle">
+							<g:Button ui:field='submit' addStyleNames='{style.register-button}'>Create my account</g:Button>
+							<g:HTMLPanel ui:field='submitSpinner' addStyleNames='{style.register-loading}'>
+								<img src="images/loading_small.gif" />
+							</g:HTMLPanel>
+						</g:HorizontalPanel>
+					</g:HTMLPanel>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
+			
+			<!-- SUBMISSION PANEL -->
+			<g:HTMLPanel ui:field='submissionPanel' addStyleNames='{style.ohmage-fullwidth-panel} {style.submission-panel}'>
+				<!-- TITLE TEXT -->
+				<h1>Just one more step...</h1>
+				
+				<!-- SUBMISSION TEXT -->
+				<g:HTMLPanel addStyleNames='{style.submission-box}'>
+					<h1>Please activate your account</h1>
+					<g:Label addStyleNames='{style.submission-text}'>We got your registration.</g:Label>
+					<g:Label addStyleNames='{style.submission-text}'>A confirmation link has been sent to the email address you provided (it may take a few minutes). Simply click that link to activate your account, and you're ready to go.</g:Label>
+					<g:Label addStyleNames='{style.submission-text}'>Thank you, and welcome to ohmage!</g:Label>
+					<g:Label addStyleNames='{style.submission-text}'>- the ohmage team</g:Label>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
+			
+			<!-- FOOTER BAR (FOOTER #2) -->
+			<g:HTMLPanel addStyleNames='{style.ohmage-fullwidth-panel}'>
+				<g:HTMLPanel addStyleNames='{style.footer-box} {style.float-right}'>
+					<ul>
+						<li>Powered by <b>ohmage</b></li>
+					</ul>
+				</g:HTMLPanel>
+				<g:HTMLPanel addStyleNames='{style.footer-box}'>
+					<ul>
+						<li>Copyright &#169; 2012 MobilizeLabs</li>
+						<li>&#183;</li>
+						<li>All rights reserved</li>
+					</ul>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
+		</g:HTMLPanel>
+	</g:HTMLPanel>
+
+</ui:UiBinder>

@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+	<ui:style>
+	/*** style reset ***/
+	html, body, div, h1, h2, h3, h4, h5, h6, p, img, dl, dt, dd, ol, ul, li, table, tr, td, form, object, embed, article, aside, canvas, command, details, fieldset, figcaption, figure, footer, group, header, hgroup, legend, mark, menu, meter, nav, output, progress, section, summary, time, audio, video {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	
+	.wrapper {
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		font-size: 10pt;
+		color: #333;
+		line-height: 1;
+		
+		position: absolute;
+		height: 100%;
+		min-width: 100%;
+		min-height: 100%;
+		
+		overflow: auto;
+	}
+	.wrapper ol, ul {
+		list-style: none;
+		line-height: 17px;
+		margin: 0 0 1em;
+	}
+	.wrapper li {
+		margin: 0 0 .5em;
+	}
+	.wrapper div {
+		/* display: block; */
+	}
+	.wrapper a {
+		color: #307fbc;
+		text-decoration: none;
+	}
+	.wrapper a:hover {
+		color: #f1831e;
+		text-decoration: none;
+	}
+	.wrapper p, h1, h2 {
+		padding: 0 0 15px 0;
+	}
+	.wrapper h1 {
+		font-size: 18pt;
+		font-weight: normal;
+		text-shadow: 0px -1px 1px #FFF;
+	}
+	.wrapper h2 {
+		font-size: 10pt;
+		font-weight: bold;
+		text-shadow: 0px -1px 1px #FFF;
+	}
+	
+	/*** top panel ***/
+	.ohmage-header-bar {
+		background-image: url('images/theme-ohmage/login-header-bg.png');
+		background-repeat: repeat-x;
+		height: 117px;
+		/* TODO: shadow; fix background, fix bottom border shadow */
+		overflow: hidden;
+	}
+	.header-box {
+		width: auto;
+		max-width: 900px;
+		min-width: 750px;
+		margin: 0 auto;
+		height: 105px;
+		padding-top: 18px;
+	}
+	.logo {
+		height: 79px;
+	}
+	
+	/*** main container ***/
+	.main {
+		width: auto;
+		max-width: 900px;
+		min-width: 750px;
+		margin: 0 auto;
+		padding-top: 15px;
+	}
+	.content {
+		padding-left: 50px;
+		padding-right: 50px;
+	}
+	.clearfix::after {
+		visibility: hidden;
+		display: block;
+		font-size: 0;
+		content: '.';
+		clear: both;
+		height: 0;
+	}
+	
+	/*** message panel ***/
+	.message-panel {
+		padding-bottom: 10px;
+	}
+	.message-box {
+		padding: 20px;
+		background: #ffffc6;
+		border: 1px solid #fff000;
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		-khtml-border-radius: 2px;
+		border-radius: 2px;
+		
+		text-align: center;
+	}
+	
+	/*** right panel ***/
+	.right-panel {
+		width: 285px;
+		float: right;
+	}
+	.signin-box {
+		padding: 20px;
+		background: #f4f9fd;
+		border: 1px solid #d2eafd;
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		-khtml-border-radius: 2px;
+		border-radius: 2px;
+	}
+	.signin-label {
+		display: block;
+		margin-bottom: 5px;
+	}
+	.signin-textbox {
+		display: block;
+		padding: 5px;
+		width: 95%;
+		border: 1px solid #51aff9;
+		margin-bottom: 10px;
+	}
+	.signin-button {
+		background-image: url('images/theme-ohmage/login-button-bg.png');
+		background-repeat: repeat-x;
+		height: 28px;
+		width: 50%;
+		font-size: 100%;
+		font-weight: bold;
+		color: #FFF;
+		text-shadow: 0px -1px 1px #666;
+		text-align: center;
+		margin-bottom: 10px;
+	}
+	/* TODO: other signin-box elements */
+	
+	/*** left panel ***/
+	.left-panel {
+		height: 100%;
+		margin: 0 295px 0 0;
+	}
+	.description-box {
+		line-height: 1.2;
+		padding: 20px;
+		background: #FAFEFF;
+		border: 1px solid #AEE7F4;
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		-khtml-border-radius: 2px;
+		border-radius: 2px;
+	}
+	
+	/*** links panel ***/
+	.links-box {
+		padding-top: 10px;
+		white-space: nowrap;
+	}
+	.links-box ul {
+		float: left;
+		display: inline;
+		color: #AAA;
+	}
+	.links-box ul li {
+		display: inline;
+		padding-right: 0px;
+	}
+	.links-box img {
+		border: 1px solid;
+	}
+	
+	/*** footer panel ***/
+	.ohmage-footer-bar {	/* footer panel */
+		padding-top: 10px;
+		position: block;
+		width: 100%;
+		overflow: hidden;
+	}
+	.footer-box {
+		padding-top: 10px;
+		white-space: nowrap;
+		border-top: 1px solid #AAA;
+	}
+	.footer-box ul {
+		float: left;
+		display: inline;
+		color: #AAA;
+	}
+	.footer-box ul li {
+		display: inline;
+		padding-right: 0px;
+	}
+	
+	/*** toolbox styles ***/
+	.float-right {
+		float: right;
+		text-align: right;
+	}
+  </ui:style>
+
+	<g:HTMLPanel addStyleNames='{style.wrapper}'>
+
+		<!-- HEADER BAR -->
+		<g:HTMLPanel addStyleNames='{style.ohmage-header-bar}'>
+			<g:HTMLPanel addStyleNames='{style.header-box} {style.content} {style.clearfix}'>
+				<g:Image addStyleNames='{style.logo}' url="images/theme-ohmage/login-logo-mobilize.png" />
+			</g:HTMLPanel>
+		</g:HTMLPanel>
+
+		<g:HTMLPanel addStyleNames='{style.main} {style.content} {style.clearfix}'>
+			<!-- MESSAGE PANEL -->
+			<g:HTMLPanel ui:field='messagePanel' addStyleNames='{style.ohmage-footer-bar} {style.message-panel}'>
+				<g:HTMLPanel ui:field='messageBox' addStyleNames='{style.message-box}'></g:HTMLPanel>
+			</g:HTMLPanel>
+			
+			<!-- RIGHT PANEL -->
+			<g:HTMLPanel addStyleNames='{style.right-panel}'>
+				<g:HTMLPanel addStyleNames='{style.signin-box}'>
+					<h2>Log in to mobilize</h2>
+					<g:HTMLPanel>
+						<g:InlineLabel addStyleNames='{style.signin-label}'>Username:</g:InlineLabel>
+						<g:TextBox ui:field='userNameTextBox' addStyleNames='{style.signin-textbox}' />
+					</g:HTMLPanel>
+					<g:HTMLPanel>
+						<g:InlineLabel addStyleNames='{style.signin-label}'>Password:</g:InlineLabel>
+						<g:PasswordTextBox ui:field='passwordTextBox' addStyleNames='{style.signin-textbox}' />
+					</g:HTMLPanel>
+					<g:HTMLPanel>
+						<g:SubmitButton ui:field='loginButton' addStyleNames='{style.signin-button}'>Sign in</g:SubmitButton>
+					</g:HTMLPanel>
+					<g:HTMLPanel ui:field='selfRegistrationText'>
+						<h2>Don't have an account? <g:InlineHyperlink ui:field="selfRegisterLink" targetHistoryToken='register'>Sign up</g:InlineHyperlink></h2>
+					</g:HTMLPanel>
+					<g:HTMLPanel ui:field='loginRecoveryText'>
+						<h2><g:InlineHyperlink ui:field="loginRecoveryLink" targetHistoryToken='reset_password'>Forgot your password?</g:InlineHyperlink></h2>
+					</g:HTMLPanel>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
+
+			<!-- LEFT PANEL -->
+			<g:HTMLPanel addStyleNames='{style.left-panel}'>
+				<g:HTMLPanel addStyleNames='{style.description-box}'>
+					<h1><font color="#00bee7">Mobilize = Computational Thinking + Data for Social Awareness and Civil Engagement</font></h1>
+					<h2>What is Mobilize?</h2>
+					<p>
+						Through Mobilize students use mobile phones and web services to systematically 
+						collect and interpret data about issues important to them and their communities. 
+						The goal of Mobilize is to strengthen computer science instruction throughout our 
+						educational system and to develop innovative methods for educating and engaging 
+						students in computational thinking and data analysis.
+					</p>
+					<p>
+						The core lessons in the Mobilize units will be framed around principles of 
+						Computational Thinking. Specifically, through Participatory Sensing campaigns, 
+						students will identify phenomena to study, consider "designs" for how data are 
+						to be collected, and rally the computational resources to execute their plans. 
+						Along the way they will grapple with questions related to the nature of data 
+						(its representation, formats and protocols for sharing) and of algorithms 
+						(rules governing data collection, strategies for analysis). Students will learn 
+						about classical themes in Computer Science, from databases to networking, as well 
+						as lessons in Statistics, from visualization to basic inference.
+					</p>
+					<h2>
+						For more information, visit Mobilize at <a href="http://www.mobilizingcs.org/">www.mobilizingcs.org</a>
+					</h2>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
+
+			<!-- LINKS BAR (FOOTER #1) -->
+			<g:HTMLPanel addStyleNames='{style.ohmage-footer-bar}'>
+				<g:HTMLPanel addStyleNames='{style.links-box}'>
+					<h2>Related Links</h2>
+					<ul>
+						<li><a href="http://www.exploringcs.org/about/related-grants/mobilize" title="Mobilize Project"><img src="images/theme-ohmage/link_mobilize.png" /></a></li>
+						<li><a href="http://www.exploringcs.org/" title="Exploring Computer Science Educational Initiative"><img src="images/theme-ohmage/link_exploringcs.png" /></a></li>
+					</ul>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
+			
+			<!-- FOOTER BAR (FOOTER #2) -->
+			<g:HTMLPanel addStyleNames='{style.ohmage-footer-bar}'>
+				<g:HTMLPanel addStyleNames='{style.footer-box} {style.float-right}'>
+					<ul>
+						<li>Powered by <b>ohmage</b></li>
+					</ul>
+				</g:HTMLPanel>
+				<g:HTMLPanel addStyleNames='{style.footer-box}'>
+					<ul>
+					    <li><a rel="license" href="https://creativecommons.org/licenses/by/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0; float: left; margin-right: 10px;" src="https://i.creativecommons.org/l/by/3.0/80x15.png"></img></a></li>
+					    <li>&#183;</li>
+						<li><a href="https://wiki.mobilizingcs.org/">Help</a></li>
+						<li>&#183;</li>
+						<li><a href="https://wiki.mobilizingcs.org/contact">Contact Us</a></li>
+					</ul>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
+		</g:HTMLPanel>
+		
+		<!-- Preload dashboard images -->
+		<div style="display:none;">
+			<img src="images/theme-ohmage/dashboard-header-bg.png" />
+			<img src="images/theme-ohmage/dashboard-header-logo.png" />
+			<img src="images/theme-ohmage/dashboard-tab-bg.png" />
+		</div>
+	</g:HTMLPanel>
+
+</ui:UiBinder>
