@@ -525,7 +525,7 @@ public class EventUtils {
 			if (maxEntry != null) {
 				bucketedLabels.add(new EventLabel(maxEntry.getKey()));
 			} else {	// If no data for this interval, we default to "ERROR"
-				bucketedLabels.add(new EventLabel(maxEntry.getKey()));
+				bucketedLabels.add(EventLabel.EmptyLabel());
 			}
 		}
 		

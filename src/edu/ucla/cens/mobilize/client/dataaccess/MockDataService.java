@@ -37,6 +37,7 @@ import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
+import edu.ucla.cens.mobilize.client.model.EventInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.RegistrationInfo;
@@ -721,6 +722,13 @@ public void whoAmI(AsyncCallback<String> callback) {
 }
 
 public void logout(AsyncCallback<String> callback) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void fetchEventData(Date date, String username,
+		AsyncCallback<List<EventInfo>> callback) {
 	// TODO Auto-generated method stub
 	
 }

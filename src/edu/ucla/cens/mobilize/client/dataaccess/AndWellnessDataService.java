@@ -16,6 +16,7 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
@@ -49,6 +50,7 @@ import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
+import edu.ucla.cens.mobilize.client.model.EventInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.RegistrationInfo;
@@ -2093,11 +2095,13 @@ public class AndWellnessDataService implements DataService {
 		final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getWhoAmIUrl());
 		
 		Map<String, String> params = new HashMap<String, String>();
+//		assert this.isInitialized : "You must call init(username, auth_token) before making any api calls";
 		params.put("client", this.client);
-		
+		params.put("auth_token", Cookies.getCookie(AwConstants.cookieAuthToken)); // why did I have to add this??
 		String postParams = MapUtils.translateToParameters(params);
 		_logger.fine("Attempting a whoami request with parameters: " + postParams);
 		try {
+//			requestBuilder.setIncludeCredentials(true); // does nothing
 			requestBuilder.sendRequest(postParams, new RequestCallback() {
 				@Override
 				public void onResponseReceived(Request request, Response response) {
@@ -2108,7 +2112,7 @@ public class AndWellnessDataService implements DataService {
 					} catch (Exception exception) {
 						_logger.severe(exception.getMessage());
 						callback.onFailure(exception);
-					}					
+					}
 				}
 
 				@Override
@@ -2157,5 +2161,12 @@ public class AndWellnessDataService implements DataService {
 			_logger.severe(e.getMessage());
 			throw new ServerException("Cannot contact server.");
 		}
+	}
+
+	@Override
+	public void fetchEventData(Date date, String username,
+			AsyncCallback<List<EventInfo>> callback) {
+		// TODO Auto-generated method stub
+		
 	}
 }

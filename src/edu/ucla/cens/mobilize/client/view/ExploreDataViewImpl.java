@@ -253,6 +253,11 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		TreeItem mobilityGraph = getTreeItem("Temporal Summary", PlotType.MOBILITY_TEMPORAL, style.treeItemMap());
 		TreeItem mobilityHistorical = getTreeItem("Historical Analysis", PlotType.MOBILITY_HISTORICAL, style.treeItemMap());
 		
+		// events
+//		TreeItem event = getTreeItem("Event", style.treeItemCategory()); // category
+		TreeItem eventDashboard = getTreeItem("Event Dashboard", PlotType.EVENT_DASHBOARD, style.treeItemMap());
+		
+		
 		// build the tree
 		plotTypeTree.addItem(surveyResponseCounts);
 		surveyResponseCounts.addItem(totalResponses);
@@ -275,6 +280,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			mobility.addItem(mobilityGraph);
 			mobility.addItem(mobilityHistorical);
 		}
+		plotTypeTree.addItem(eventDashboard);
 
 		// add expand/fold click handler for tree's categories
 		plotTypeTree.addSelectionHandler(new SelectionHandler<TreeItem>() {
@@ -1025,10 +1031,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			panels.add(date_label);
 
 			Widget testViz = MobilityUtils.createMobilityBarChartCanvasWidget(buckets, interval, 750, 120, true, true);
-			Widget viz2 = MobilityUtils.createMobilityBarChartCanvasWidget(buckets1, 1, 750, 120, true, true);
+//			Widget viz2 = MobilityUtils.createMobilityBarChartCanvasWidget(buckets1, 1, 750, 120, true, true);
 			
 			panels.add(testViz);
-			panels.add(viz2);
+//			panels.add(viz2);
 		}
 
 		plotContainer.add(panels);
@@ -1047,6 +1053,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		
 		for (int i = 0; i < mdataList.size(); i++) {
 			EventInfo mdata = mdataList.get(i);
+			if (mdata.getLabel() == null)
+				mdata = null;
 			// make all legend info available by name
 			if (!labelMap.containsKey(mdata.getLabel().toString()))
 				labelMap.put(mdata.getLabel().toString(), mdata);
@@ -1056,22 +1064,23 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			// use list of one thing so I can change to multiple before changing the current way of doing it
 			List<EventInfo> mdataAsList = new ArrayList<EventInfo>();
-			mdataList.add(mdata);
+			mdataAsList.add(mdata);
 			
 			buckets.get(mdata.getType()).addAll(EventUtils.bucketByInterval(mdataAsList, interval));
 			
-			DateTimeFormat format = DateTimeFormat.getFormat("EEEE, MMMM dd, yyyy");
-			String day_str = format.format(DateUtils.addDays(getFromDate(), i));
-
-			Label date_label = new Label(day_str);
-			panels.add(date_label);
-
-			Widget testViz = EventUtils.createLocationEventsBarChartCanvasWidget(buckets.get(EventType.LOCATION), interval, 750, 120, true, true, labelMap);
-//			Widget viz2 = MobilityUtils.createMobilityBarChartCanvasWidget(buckets1, 1, 750, 120, true, true);
 			
-			panels.add(testViz);
-//			panels.add(viz2);
 		}
+		DateTimeFormat format = DateTimeFormat.getFormat("EEEE, MMMM dd, yyyy");
+		String day_str = format.format(DateUtils.addDays(getFromDate(), 1));
+		Label date_label = new Label(day_str);
+		panels.add(date_label);
+
+		Widget testViz = EventUtils.createLocationEventsBarChartCanvasWidget(buckets.get(EventType.LOCATION), interval, 750, 120, true, true, labelMap);
+//			Widget viz2 = MobilityUtils.createMobilityBarChartCanvasWidget(buckets1, 1, 750, 120, true, true);
+		
+		panels.add(testViz);
+//			panels.add(viz2);
+//		}
 
 		plotContainer.add(panels);
 	}

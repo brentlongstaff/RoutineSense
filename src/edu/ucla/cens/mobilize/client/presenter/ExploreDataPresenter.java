@@ -555,7 +555,8 @@ public class ExploreDataPresenter implements Presenter {
 				if (plotType.equals(PlotType.MOBILITY_DASHBOARD) || 
 						plotType.equals(PlotType.MOBILITY_MAP) || 
 						plotType.equals(PlotType.MOBILITY_TEMPORAL) || 
-						plotType.equals(PlotType.MOBILITY_HISTORICAL)) {
+						plotType.equals(PlotType.MOBILITY_HISTORICAL) || 
+						plotType.equals(PlotType.EVENT_DASHBOARD)) {
 					fetchAndFillParticipantChoicesForClass(classId);
 				} else {
 					fetchAndFillParticipantChoicesForCampaign(campaignId, view.getSelectedParticipant());
@@ -598,7 +599,7 @@ public class ExploreDataPresenter implements Presenter {
 				// TODO: clean this check up
 				
 				// MOBILITY_MAP and MOBILITY_DASHBOARD are single day
-				if (view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_DASHBOARD)) {
+				if (view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_DASHBOARD) || view.getSelectedPlotType().equals(PlotType.EVENT_DASHBOARD)) {
 					view.selectToDate(fromDate);
 					toDate = fromDate;
 				}
@@ -612,11 +613,11 @@ public class ExploreDataPresenter implements Presenter {
 				else if (fromDate != null && toDate != null && fromDate.after(toDate)) {	//make sure date range is valid
 					ErrorDialog.show("Invalid date selection", "Start date must be before or the same as the end date.");
 				}
-				else if ((view.getSelectedPlotType().equals(PlotType.MOBILITY_DASHBOARD) || view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_TEMPORAL) || view.getSelectedPlotType().equals(PlotType.MOBILITY_HISTORICAL))
+				else if ((view.getSelectedPlotType().equals(PlotType.MOBILITY_DASHBOARD) || view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_TEMPORAL) || view.getSelectedPlotType().equals(PlotType.MOBILITY_HISTORICAL) || view.getSelectedPlotType().equals(PlotType.EVENT_DASHBOARD))
 						&& (fromDate == null || toDate == null)) {
 					ErrorDialog.show("Invalid date selection", "Please select both a start and end date range to view your mobility data.");
 				}
-				else if ((view.getSelectedPlotType().equals(PlotType.MOBILITY_DASHBOARD) || view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_TEMPORAL) || view.getSelectedPlotType().equals(PlotType.MOBILITY_HISTORICAL))
+				else if ((view.getSelectedPlotType().equals(PlotType.MOBILITY_DASHBOARD) || view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_TEMPORAL) || view.getSelectedPlotType().equals(PlotType.MOBILITY_HISTORICAL) || view.getSelectedPlotType().equals(PlotType.EVENT_DASHBOARD))
 						&& DateUtils.daysApart(fromDate, toDate) >= 22) {
 					ErrorDialog.show("Invalid date selection", "Mobility date range may only be up to 21 days.");
 				}
@@ -711,6 +712,16 @@ public class ExploreDataPresenter implements Presenter {
 				break;
 			case MOBILITY_HISTORICAL:
 			case MOBILITY_TEMPORAL:
+				view.setCampaignDropDownEnabled(false);
+				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(true);
+				view.setParticipantDropDownEnabled(true);
+				view.setPromptXDropDownEnabled(false);
+				view.setPromptYDropDownEnabled(false);
+				view.setDateRangeEnabled(true);
+				view.setExportButtonEnabled(false);
+				break;
+			case EVENT_DASHBOARD:
 				view.setCampaignDropDownEnabled(false);
 				view.setSurveyDropDownEnabled(false);
 				view.setClassDropDownEnabled(true);

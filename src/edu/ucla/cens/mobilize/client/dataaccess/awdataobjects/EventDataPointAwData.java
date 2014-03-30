@@ -35,12 +35,12 @@ public class EventDataPointAwData extends QueryAwData {
 	public final native double getTimeRaw() /*-{ return this.t; }-*/;	//needs to be cast to long
 	public final long getTime() { return (long)getTimeRaw(); }
 	public final native String getTimezone() /*-{ return this.tz; }-*/;
-	public final native long getDuration() /*-{ return this.ls; }-*/;
-	public final native double getLatitude();
-	public final native double getLongitude();
-	public final native String getName();
-	public final native ArrayList<String> getApps();
-	public final native String getDirection();
+	public final native Long getDuration() /*-{ return this.duration; }-*/;
+	public final native double getLatitude() /*-{ return this.latitude; }-*/;
+	public final native double getLongitude() /*-{ return this.longitude; }-*/;
+	public final native String getLabel() /*-{ return this.label; }-*/;
+	public final native ArrayList<String> getApps() /*-{ return this.apps; }-*/;
+	public final native String getDirection() /*-{ return this.direction; }-*/;
 	//public final native MobilityLocationAwData getLocation() /*-{ return eval('(' + this.l + ')');  }-*/;
 	public final native MobilityLocationAwData getLocation() /*-{ return this.l;  }-*/;
 }

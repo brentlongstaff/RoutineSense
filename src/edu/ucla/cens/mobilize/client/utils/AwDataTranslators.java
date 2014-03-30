@@ -808,10 +808,10 @@ public class AwDataTranslators {
 		
 		JSONValue value = JSONParser.parseStrict(eventReadQueryJSON);
 		JSONObject obj = value.isObject();
-		if (obj == null || !obj.containsKey("data")) throw new Exception("Invalid json format.");
+		if (obj == null || !obj.containsKey("events_by_type")) throw new Exception("Invalid json format.");
 		JSONObject dataHash = obj.get("events_by_type").isObject();
 		if (dataHash == null) throw new Exception("dataHash has invalid json format.");
-		for (String type : dataHash.keySet())
+		for (String type : dataHash.keySet()) // each event type
 		{
 			JSONArray eventList = dataHash.get(type).isArray();
 			if (eventList == null)
@@ -819,37 +819,45 @@ public class AwDataTranslators {
 			for (int i = 0; i < eventList.size(); i++) {
 				try {
 					//parse mobility array JSON
-					EventDataPointAwData awData = (EventDataPointAwData)eventList.get(i).isObject().getJavaScriptObject();
+//					EventDataPointAwData awData = (EventDataPointAwData)eventList.get(i).isObject().getJavaScriptObject();
+					JSONObject eventObject = eventList.get(i).isObject();
 					EventInfo evInfo = new EventInfo();
-					evInfo.setType(awData.getType());
-					evInfo.setLabel(awData.getName());
-					evInfo.setDate(new Date(awData.getTime()));
-					evInfo.setDuration(awData.getDuration());
+					evInfo.setType(EventType.fromServerString(type));
+					
+					evInfo.setDate(new Date((long)eventObject.get("t").isNumber().doubleValue()));
 					//mobInfo.setDate(DateUtils.translateFromServerFormat(awData.getTimestamp()));	//original
-					evInfo.setTimezone(awData.getTimezone());
+//					evInfo.setTimezone(awData.getTimezone());
 //					evInfo.setLocationStatus(LocationStatus.fromServerString(awData.getLocStatus()));
 					switch(evInfo.getType())
 					{
 						case LOCATION: 
 //							MobilityLocationAwData l = awData.getLocation();
-							evInfo.setLatitude(awData.getLatitude());
-							evInfo.setLongitude(awData.getLongitude());
-							
+							evInfo.setLatitude(eventObject.get("latitude").isNumber().doubleValue());
+							evInfo.setLongitude(eventObject.get("longitude").isNumber().doubleValue());
+							evInfo.setDuration((long)eventObject.get("duration").isNumber().doubleValue());
+							evInfo.setLabel(eventObject.get("id").isString().stringValue());
 //							evInfo.setLocationAccuracy(awData.getAccuracy());
 //							evInfo.setLocationProvider(l.getProvider());
 //							evInfo.setLocationTimestamp(new Date(l.getTime()));
 							break;
 						case ACTIVITY:
-							
+							evInfo.setLabel(eventObject.get("activity").isString().stringValue());
+							evInfo.setDuration((long)eventObject.get("duration").isNumber().doubleValue());
 							break;
 						case APP:
-							evInfo.setApps(awData.getApps());
+//							evInfo.setLabel(eventObject.get("name").isString().stringValue());
+							evInfo.setDuration((long)eventObject.get("duration").isNumber().doubleValue());
+							evInfo.setApps(parseApps(eventObject.get("name")));
+							evInfo.setLabel("apps");
 							break;
 						case SMS:
-							evInfo.setDirection(awData.getDirection());
+							evInfo.setLabel(eventObject.get("name").isString().stringValue());
+							evInfo.setDirection(eventObject.get("direction").isString().stringValue());
 							break;
 						case CALL:
-							evInfo.setDirection(awData.getDirection());
+							evInfo.setLabel(eventObject.get("name").isString().stringValue());
+							evInfo.setDuration((long)eventObject.get("duration").isNumber().doubleValue());
+							evInfo.setDirection(eventObject.get("direction").isString().stringValue());
 							break;
 						default:
 							
@@ -867,6 +875,27 @@ public class AwDataTranslators {
 		
 		
 		return eventInfos;
+	}
+	
+	private static ArrayList<String> parseApps(JSONValue appsJSON)
+	{
+//		JSONObject json = appsJSON.isObject();
+		ArrayList<String> apps = new ArrayList<String>();
+		JSONArray aj = appsJSON.isArray();
+//		StringBuffer sb = new StringBuffer("");
+		if (aj != null)
+		{
+			for (int i = 0; i < aj.size(); i++)
+			{
+//				if (i > 0)
+//					sb.append(",");
+				JSONValue appv = aj.get(i);
+				JSONString appStr = appv.isString();
+				String appName = appStr.stringValue();
+				apps.add(appName);
+			}
+		}
+		return apps;
 	}
 	
 	public static List<MobilityChunkedInfo> translateMobilityReadChunkedQueryJSONToMobilityChunkedInfoList(String mobilityReadChunkedQueryJSON) throws Exception {

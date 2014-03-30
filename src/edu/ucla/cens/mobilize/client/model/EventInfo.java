@@ -12,7 +12,7 @@ public class EventInfo
 	// standard event attributes
 	Date ts;			//timestamp
 	String tz;			//timezone
-	long duration;		// length in seconds
+	Long duration;		// length in seconds
 	String label;		// depends on the type, could be app name or collection of apps name or activity mode &c
 	
 	// descriptors to describe events to users

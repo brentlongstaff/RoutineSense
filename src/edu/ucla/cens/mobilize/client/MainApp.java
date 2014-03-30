@@ -29,6 +29,8 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.AndWellnessDataService;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
+import edu.ucla.cens.mobilize.client.dataaccess.MockDataService;
+import edu.ucla.cens.mobilize.client.dataaccess.RoutineSenseDataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEvent;
 import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEventHandler;
@@ -102,7 +104,7 @@ public class MainApp implements EntryPoint, HistoryListener {
 
 	// event management
 	EventBus eventBus = new SimpleEventBus();
-	DataService awDataService = new AndWellnessDataService();
+	DataService awDataService = new RoutineSenseDataService();
 	TokenLoginManager loginManager = new TokenLoginManager(eventBus);
 
 	// classes for accessing data store
@@ -203,6 +205,16 @@ public class MainApp implements EntryPoint, HistoryListener {
 				@Override
 				public void onFailure(Throwable caught) {
 					
+					// testing for daft server
+//Cookies.setCookie(AwConstants.cookieUserName, userName);
+//					
+//					_logger.info("user is currently logged in");
+//					setUserName(userName);
+//					initDataService(userName, loginManager.getAuthorizationToken());
+//					loadAppConfigAndInitApp();
+//					bind();
+					// /testing for daft server
+					
 					Cookies.removeCookie(AwConstants.cookieUserName);
 
 					// NOTE #1: These tokens need to be handled here because they are separate from the main dashboard tokens
@@ -231,6 +243,7 @@ public class MainApp implements EntryPoint, HistoryListener {
 					
 					_logger.info("user is currently logged in");
 					setUserName(userName);
+					
 					initDataService(userName, loginManager.getAuthorizationToken());
 					loadAppConfigAndInitApp();
 					bind();
