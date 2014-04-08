@@ -330,7 +330,7 @@ public class ExploreDataPresenter implements Presenter {
 								}
 							}
 							if (finishedAndGotNoData)
-								ErrorDialog.show("Unable to retrieve mobility data with the selected parameters", caught.getMessage());
+								ErrorDialog.show("Unable to retrieve event data with the selected parameters", caught.getMessage());
 						}
 
 						@Override

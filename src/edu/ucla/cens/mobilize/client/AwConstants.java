@@ -32,7 +32,7 @@ public class AwConstants {
     public final static int MAPS_THUMBNAIL_HEIGHT = 50;
     
     //private final static String debugServerLocation = "https://dev1.andwellness.org";
-    private final static String debugServerLocation = "https://internal.ohmage.org";
+    private final static String debugServerLocation = "https://test.ohmage.org";
     //private final static String debugServerLocation = "https://dev.mobilizingcs.org";
     private final static String releaseServerLocation = ".."; // same as web server
 

@@ -1049,36 +1049,41 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		final VerticalPanel panels = new VerticalPanel();
 		final int interval = 5;	// minutes
 		HashMap<EventType, List<EventLabel>> buckets = new HashMap<EventType, List<EventLabel>>();//  EventUtils.bucketByInterval(mdata, interval);
-		HashMap<String, EventInfo> labelMap = new HashMap<String, EventInfo>();
-		
+		HashMap<EventType, HashMap<String, EventInfo>> labelMaps = new HashMap<EventType, HashMap<String, EventInfo>>();
+		HashMap<EventType, List<EventInfo>> mdataAsLists = new HashMap<EventType, List<EventInfo>>();
 		for (int i = 0; i < mdataList.size(); i++) {
 			EventInfo mdata = mdataList.get(i);
 			if (mdata.getLabel() == null)
 				mdata = null;
 			// make all legend info available by name
-			if (!labelMap.containsKey(mdata.getLabel().toString()))
-				labelMap.put(mdata.getLabel().toString(), mdata);
+			if (!labelMaps.containsKey(mdata.getType().toString()))
+				labelMaps.put(mdata.getType(), new HashMap<String, EventInfo>());
+			if (!labelMaps.get(mdata.getType()).containsKey(mdata.getLabel().toString()))
+				labelMaps.get(mdata.getType()).put(mdata.getLabel().toString(), mdata);
+			if (!mdataAsLists.containsKey(mdata.getType()))
+				mdataAsLists.put(mdata.getType(), new ArrayList<EventInfo>());
 			// make sure bucket list of this type of event is available
-			if (!buckets.containsKey(mdata.getType().toString()))
+			if (!buckets.containsKey(mdata.getType()))
 				buckets.put(mdata.getType(), new ArrayList<EventLabel>());
 			
 			// use list of one thing so I can change to multiple before changing the current way of doing it
-			List<EventInfo> mdataAsList = new ArrayList<EventInfo>();
-			mdataAsList.add(mdata);
 			
-			buckets.get(mdata.getType()).addAll(EventUtils.bucketByInterval(mdataAsList, interval));
-			
-			
+			mdataAsLists.get(mdata.getType()).add(mdata);
 		}
+//		if (mdata.getType().equals(EventType.LOCATION)) // TODO REMOVE
+			buckets.get(EventType.LOCATION).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.LOCATION), interval));
+			
+			
+		
 		DateTimeFormat format = DateTimeFormat.getFormat("EEEE, MMMM dd, yyyy");
 		String day_str = format.format(DateUtils.addDays(getFromDate(), 1));
 		Label date_label = new Label(day_str);
 		panels.add(date_label);
 
-		Widget testViz = EventUtils.createLocationEventsBarChartCanvasWidget(buckets.get(EventType.LOCATION), interval, 750, 120, true, true, labelMap);
+		Widget locationViz = EventUtils.createLocationEventsBarChartCanvasWidget(buckets.get(EventType.LOCATION), interval, 750, 120, true, true, labelMaps.get(EventType.LOCATION));
 //			Widget viz2 = MobilityUtils.createMobilityBarChartCanvasWidget(buckets1, 1, 750, 120, true, true);
 		
-		panels.add(testViz);
+		panels.add(locationViz);
 //			panels.add(viz2);
 //		}
 

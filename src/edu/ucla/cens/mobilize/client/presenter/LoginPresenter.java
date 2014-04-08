@@ -53,8 +53,8 @@ public class LoginPresenter implements Presenter,
     @Override
     public void onSubmit() {
       // Check to be sure a username and password have been entered.
-      final String username = "brent";//view.getUsername();
-      final String password = "Bertie$2";//view.getPassword();
+      final String username = "ohmage.brent";//view.getUsername();
+      final String password = "Brent.00";//"Bertie$2";//view.getPassword();
       
       if (username.isEmpty()) {
         view.setLoginFailed("Please enter a user name.");

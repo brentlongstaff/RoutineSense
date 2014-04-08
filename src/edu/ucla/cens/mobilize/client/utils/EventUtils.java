@@ -464,8 +464,41 @@ public class EventUtils {
 		Map<String, Integer> votes = new LinkedHashMap<String, Integer>();
 		
 		// TODO: Describe what we're doing
-		
 		int curIndex = 0;
+		
+		for (int i = 0; i < intervals; i++)
+		{
+			if (generateBlankPlot == false) {
+				// Fill up bucket with mobility data within current interval
+				if (curIndex < data.size()) 
+				{
+					EventInfo m = data.get(curIndex);
+					
+					// Compute the day's mobility time in minutes
+					int curTimeInMin = getTimeInMinutes(m.getDate());
+					int endTimeInMin = curTimeInMin + (int)m.getDuration() / 60;
+					// Check if the current mobility point is within the current interval
+					if (curTimeInMin < i * intervalInMinutes) {
+						bucket.add(m);
+						if (endTimeInMin < i * intervalInMinutes) // only if done
+						{
+							curIndex++;
+						}
+						bucketedLabels.add(new EventLabel(m.getLabel()));
+						continue;
+					} 
+//					else {
+//						prevData = m;
+//						break;
+//					}
+				}
+				
+			}
+//			else
+				bucketedLabels.add(EventLabel.EmptyLabel());
+		}
+		if (true)return bucketedLabels;
+		
 		for (int i = 0; i < intervals; i++) {
 			EventInfo prevData = null;
 			bucket.clear();
@@ -478,11 +511,12 @@ public class EventUtils {
 					
 					// Compute the day's mobility time in minutes
 					int curTimeInMin = getTimeInMinutes(m.getDate());
-	
+					int endTimeInMin = curTimeInMin + (int)m.getDuration() / 60;
 					// Check if the current mobility point is within the current interval
 					if (curTimeInMin < i * intervalInMinutes) {
 						bucket.add(m);
-						curIndex++;
+						if (endTimeInMin < i * intervalInMinutes) // only if done
+							curIndex++;
 					} else {
 						prevData = m;
 						break;

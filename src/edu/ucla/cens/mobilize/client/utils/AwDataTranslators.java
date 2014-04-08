@@ -819,12 +819,14 @@ public class AwDataTranslators {
 			for (int i = 0; i < eventList.size(); i++) {
 				try {
 					//parse mobility array JSON
-//					EventDataPointAwData awData = (EventDataPointAwData)eventList.get(i).isObject().getJavaScriptObject();
+					EventDataPointAwData awData = (EventDataPointAwData)eventList.get(i).isObject().getJavaScriptObject();
 					JSONObject eventObject = eventList.get(i).isObject();
 					EventInfo evInfo = new EventInfo();
 					evInfo.setType(EventType.fromServerString(type));
 					
-					evInfo.setDate(new Date((long)eventObject.get("t").isNumber().doubleValue()));
+					evInfo.setDate(new Date(awData.getTime()));//new Date((long)eventObject.get("t").isNumber().doubleValue()));
+					evInfo.setTimezone("America/Los Angeles");
+					
 					//mobInfo.setDate(DateUtils.translateFromServerFormat(awData.getTimestamp()));	//original
 //					evInfo.setTimezone(awData.getTimezone());
 //					evInfo.setLocationStatus(LocationStatus.fromServerString(awData.getLocStatus()));
@@ -891,6 +893,7 @@ public class AwDataTranslators {
 //					sb.append(",");
 				JSONValue appv = aj.get(i);
 				JSONString appStr = appv.isString();
+				
 				String appName = appStr.stringValue();
 				apps.add(appName);
 			}
