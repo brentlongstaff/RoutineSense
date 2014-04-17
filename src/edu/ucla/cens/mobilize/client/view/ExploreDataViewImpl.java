@@ -27,6 +27,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -39,8 +40,10 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -62,6 +65,7 @@ import com.google.gwt.maps.client.event.EventCallback;
 import com.google.gwt.maps.client.event.HasMapsEventListener;
 import com.google.gwt.maps.client.overlay.Marker;
 import com.google.gwt.maps.client.overlay.MarkerImage;
+import com.ibm.icu.util.OverlayBundle;
 
 import edu.ucla.cens.mobilize.client.common.EventLabel;
 import edu.ucla.cens.mobilize.client.common.EventType;
@@ -143,12 +147,14 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
 	private List<ListBox> requiredFields = new ArrayList<ListBox>();
 	private MapWidget mapWidget;
+	private List<MapWidget> locationIDs = new ArrayList<MapWidget>();
 	private final InfoWindow infoWindow;
 	private List<HasMapsEventListener> clickHandlers;
 	private MarkerClusterer markerClusterer;
 	private Map<Marker, SurveyResponse> markerToResponseMap = new HashMap<Marker, SurveyResponse>();
 	private Map<Marker, MobilityChunkedInfo> markerToMobilityChunkedMap = new HashMap<Marker, MobilityChunkedInfo>();
 	private Map<Marker, MobilityInfo> markerToMobilityMap = new HashMap<Marker, MobilityInfo>();
+	private Map<Marker, EventInfo> markerToLocationID = new HashMap<Marker, EventInfo>();
 	private FlowPanel spinner; 
 	private FlowPanel startarrow;
 
@@ -904,6 +910,33 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			drawMobilityDataOnMap(mdata);
 		}
 	}
+	
+	public void showLocationIDOnMap(final List<EventInfo> mdata, final HorizontalPanel panel) {
+		// hide previous plot, if any
+//		clearPlot(); 
+
+		// add responses to map, attach it to the document to make it visible
+//		if (mapWidget == null) { // lazy init map, add responses when done
+		List<EventInfo> distinct = new ArrayList<EventInfo>();
+		List<String> seenLabels = new ArrayList<String>();
+		for (final EventInfo m : mdata)
+			if (!seenLabels.contains(m.getLabel()))
+			{
+				seenLabels.add(m.getLabel());
+				distinct.add(m);
+			}
+		for (final EventInfo m : distinct)
+			initLocationIDMap(new Runnable() {
+				@Override
+				public void run() {
+					drawLocationIDOnMap(m, panel);
+//					hideWaitIndicator();
+				}
+			});
+//		} else { // map already initialized
+//			drawLocationIDOnMap(mdata, panel);
+//		}
+	}
 
 	@Override
 	public void showMobilityDashboard(final List<MobilityInfo> mdata) {
@@ -990,6 +1023,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 				}
 
 				markerToMobilityMap.put(marker, m);
+				
 
 				Event.addListener(marker, "click", new EventCallback() {
 					@Override
@@ -1009,7 +1043,66 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		// Zoom and center the map to the new bounds
 		mapWidget.getMap().fitBounds(bounds); 
 	}
+	
+	private void drawLocationIDOnMap(final EventInfo ei, HorizontalPanel panel) {
+		// Clear any previous data points    
+//		clearOverlays();
 
+		// Show error message if user has no mobility data
+		if (ei == null) {
+			ErrorDialog.show("Sorry, we couldn't find any mobility data for the selected date(s).");
+			return;
+		}
+		boolean hasPlottableData = false;
+
+		List<Marker> markers = new ArrayList<Marker>();	// markers to add to MarkerClusterer
+		LatLngBounds bounds = LatLngBounds.newInstance();
+
+		// Add new data points 
+//		for (int i = 0; i < 1; i++){//list.size(); i++) {
+//			EventInfo m = list.get(0);
+
+//			if (m.getLocationStatus() != LocationStatus.UNAVAILABLE) 
+			
+			{
+				final LatLng location = LatLng.newInstance(ei.getLatitude(), ei.getLongitude());
+//				final LatLng location = LatLng.newInstance(34.164163, -118.767289);
+				
+				bounds.extend(location);
+				
+				
+
+//				final LatLng left = LatLng.newInstance(34.164163 + , lng)
+//				bounds.extend(left);
+				
+				
+				
+				final Marker marker = Marker.newInstance();
+				marker.setPosition(location);
+//				marker.set();
+				//marker.setMap(mapWidget.getMap());	//*** old ***
+				markers.add(marker);	// instead of rendering the marker directly, add it to our list
+				
+				marker.setMap(locationIDs.get(locationIDs.size() - 1).getMap());
+				
+				markerToLocationID.put(marker, ei);
+
+			}
+//		}
+			Label locLabel = new Label(ei.getLabel());
+			String htmlStr = "<span style='color: "+"blue"+"'>"+SafeHtmlUtils.htmlEscape("Text!!!!")+"</span>";
+			HTML html = new HTML(htmlStr);
+			locLabel = html;
+			panel.add(locLabel);
+			panel.add(locationIDs.get(locationIDs.size() - 1));
+//		if (!locationIDs.get(locationIDs.size() - 1).isAttached()) gpanel.add(locationIDs.get(locationIDs.size() - 1));
+//		plotContainer.add(gpanel);
+		// Zoom and center the map to the new bounds
+//		locationIDs.get(locationIDs.size() - 1).getMap().fitBounds(bounds);
+			locationIDs.get(locationIDs.size() - 1).getMap().setCenter(LatLng.newInstance(ei.getLatitude(), ei.getLongitude()));;
+		locationIDs.get(locationIDs.size() - 1).getMap().setZoom(zoomlevel);
+	}
+	final int zoomlevel = 15;
 	@Override
 	public void showMobilityTemporalSummary(final List<List<MobilityInfo>> mdataList) {
 		// hide previous plot, if any
@@ -1047,16 +1140,31 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		hideWaitIndicator();
 
 		final VerticalPanel panels = new VerticalPanel();
+		
 		final int interval = 5;	// minutes
 		HashMap<EventType, List<EventLabel>> buckets = new HashMap<EventType, List<EventLabel>>();//  EventUtils.bucketByInterval(mdata, interval);
+		
+		EventType[] allTypes = new EventType [] { EventType.ACTIVITY, EventType.APP, EventType.CALL, EventType.SMS, EventType.LOCATION };
 		HashMap<EventType, HashMap<String, EventInfo>> labelMaps = new HashMap<EventType, HashMap<String, EventInfo>>();
+		for (EventType type : allTypes)
+		{
+			buckets.put(type, new ArrayList<EventLabel>());
+			labelMaps.put(type, new HashMap<String, EventInfo>());
+		}
+//		buckets.put(EventType.LOCATION, new ArrayList<EventLabel>());
+//		buckets.put(EventType.SMS, new ArrayList<EventLabel>());
+//		buckets.put(EventType.CALL, new ArrayList<EventLabel>());
+//		buckets.put(EventType.APP, new ArrayList<EventLabel>());
+		
+		
+		
 		HashMap<EventType, List<EventInfo>> mdataAsLists = new HashMap<EventType, List<EventInfo>>();
 		for (int i = 0; i < mdataList.size(); i++) {
 			EventInfo mdata = mdataList.get(i);
 			if (mdata.getLabel() == null)
 				mdata = null;
 			// make all legend info available by name
-			if (!labelMaps.containsKey(mdata.getType().toString()))
+			if (!labelMaps.containsKey(mdata.getType()))
 				labelMaps.put(mdata.getType(), new HashMap<String, EventInfo>());
 			if (!labelMaps.get(mdata.getType()).containsKey(mdata.getLabel().toString()))
 				labelMaps.get(mdata.getType()).put(mdata.getLabel().toString(), mdata);
@@ -1072,24 +1180,84 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		}
 //		if (mdata.getType().equals(EventType.LOCATION)) // TODO REMOVE
 			buckets.get(EventType.LOCATION).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.LOCATION), interval));
-			
-			
+			buckets.get(EventType.ACTIVITY).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.ACTIVITY), interval));
+			buckets.get(EventType.APP).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.APP), interval));
+			buckets.get(EventType.SMS).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.SMS), interval));
+			buckets.get(EventType.CALL).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.CALL), interval));
 		
 		DateTimeFormat format = DateTimeFormat.getFormat("EEEE, MMMM dd, yyyy");
 		String day_str = format.format(DateUtils.addDays(getFromDate(), 1));
 		Label date_label = new Label(day_str);
 		panels.add(date_label);
-
-		Widget locationViz = EventUtils.createLocationEventsBarChartCanvasWidget(buckets.get(EventType.LOCATION), interval, 750, 120, true, true, labelMaps.get(EventType.LOCATION));
-//			Widget viz2 = MobilityUtils.createMobilityBarChartCanvasWidget(buckets1, 1, 750, 120, true, true);
+		Map<String, String> locColors = EventUtils.getEventColorMap(labelMaps.get(EventType.LOCATION));
+		Widget locationViz = EventUtils.createLocationEventsBarChartCanvasWidget(buckets.get(EventType.LOCATION), interval, 750, 120, true, true, labelMaps.get(EventType.LOCATION), locColors);
 		
-		panels.add(locationViz);
+//			Widget viz2 = MobilityUtils.createMobilityBarChartCanvasWidget(buckets1, 1, 750, 120, true, true);
+		Widget activityViz = EventUtils.createActivityEventsBarChartCanvasWidget(buckets.get(EventType.ACTIVITY), interval, 750, 120, true, true, labelMaps.get(EventType.ACTIVITY));
+		Widget appViz = EventUtils.createActivityEventsBarChartCanvasWidget(buckets.get(EventType.APP), interval, 750, 120, true, true, labelMaps.get(EventType.APP));
+		Widget smsViz = EventUtils.createActivityEventsBarChartCanvasWidget(buckets.get(EventType.SMS), interval, 750, 120, true, true, labelMaps.get(EventType.SMS));
+		Widget callViz = EventUtils.createActivityEventsBarChartCanvasWidget(buckets.get(EventType.CALL), interval, 750, 120, true, true, labelMaps.get(EventType.CALL));
+		
+		// Event identification thingies
+		// location
+		final HashMap<EventType, List<EventInfo>> mdataFinal = mdataAsLists;
+		
+		// TODO foreach
+		
+		
+		
+//		if (mapWidget == null) { // lazy init map, add responses when done
+//			initMap(new Runnable() {
+//				@Override
+//				public void run() {
+//					drawLocationIDOnMap(mdataFinal.get(EventType.LOCATION));
+//					hideWaitIndicator();
+//				}
+//			});
+//		} else { // map already initialized
+//			drawLocationIDOnMap(mdataAsLists.get(EventType.LOCATION));
+//		}
+		
+		HorizontalPanel locPanel = new HorizontalPanel();
+
+		if (locationViz != null)
+		{
+			panels.add(locationViz);
+			showLocationIDOnMap(mdataFinal.get(EventType.LOCATION), locPanel);
+		}
+		if (activityViz != null)
+			panels.add(activityViz);
+		if (appViz != null)
+			panels.add(appViz);
+		if (smsViz != null)
+			panels.add(smsViz);
+		if (callViz != null)
+			panels.add(callViz);
 //			panels.add(viz2);
 //		}
-
 		plotContainer.add(panels);
+//		if (gpanel == null)
+//			gpanel = new HorizontalPanel();
+		if (!locPanel.isAttached())
+		{
+//			gpanel.clear();
+//			locPanel.add(new Label("duck"));
+		
+			clearOverlays();
+		 
+			plotContainer.add(locPanel);
+			
+			
+//			showLocationIDOnMap(mdataFinal.get(EventType.LOCATION), locPanel);
+			
+//			plotContainer.add(locPanel);
+//			locPanel.add(new Label(""+((MapWidget)locPanel.getWidget(1)).getMap().getZoom()));
+		}
+			
+		
+		
 	}
-	
+//	final HorizontalPanel gpanel = new HorizontalPanel();
 
 	@Override
 	public void showMobilityHistoricalAnalysis(List<List<MobilityInfo>> multiDayMobilityDataList) {
@@ -1174,6 +1342,12 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			Event.clearInstanceListeners(marker); // Remove the event listener
 		}
 		markerToMobilityMap.clear();
+		
+		for (final Marker marker: markerToLocationID.keySet()) {
+			marker.setMap(null); // Remove from map
+			Event.clearInstanceListeners(marker); // Remove the event listener
+		}
+		markerToLocationID.clear();
 	}
 
 	private void initMap(final Runnable actionToTakeWhenDone) {
@@ -1207,7 +1381,41 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
 		if (actionToTakeWhenDone != null) actionToTakeWhenDone.run();
 	}
+	
+	private void initLocationIDMap(final Runnable actionToTakeWhenDone) {
+		final MapOptions options = new MapOptions();
+		options.setMapTypeControl(true);
+		options.setZoom(zoomlevel);
+		options.setCenter(LatLng.newInstance(39.509, -98.434));
+		options.setMapTypeId(new MapTypeId().getRoadmap());
+		options.setDraggable(true);
+		options.setScaleControl(true);
+		options.setNavigationControl(true);
+		options.setScrollwheel(true);
+		MapWidget mw = new MapWidget(options);
+		mw.setSize("200px", "200px");
 
+		// Close the info window when clicking anywhere
+//		Event.addListener(mw.getMap(), "click", new EventCallback() {
+//			@Override
+//			public void callback() {
+//				closeInfoWindow();
+//			}
+//		});
+
+		// Close the info window when clicking close
+//		Event.addListener(infoWindow, "closeclick", new EventCallback() {
+//			@Override
+//			public void callback() {
+//				closeInfoWindow();
+//			}
+//		});
+		
+		locationIDs.add(mw);
+
+		if (actionToTakeWhenDone != null) actionToTakeWhenDone.run();
+	}
+	
 	@Override
 	public void showResponseDetail(Marker location) {
 		if (markerToResponseMap.containsKey(location)) {

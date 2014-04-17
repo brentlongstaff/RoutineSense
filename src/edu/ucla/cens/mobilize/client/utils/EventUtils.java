@@ -88,6 +88,7 @@ public class EventUtils {
 		{
 			colorTable.put(str, getColor(index++));
 		}
+		colorTable.put(EventLabel.EmptyLabel().toString(), nullColor);
 		return colorTable;
 	}
 	
@@ -96,9 +97,21 @@ public class EventUtils {
 	 * @return Elapsed time in minutes for the single day
 	 */
 	public static int getTimeInMinutes(Date date) {
-		return (60*date.getHours() + date.getMinutes());
+		int mod = 0;
+		boolean correcttz = true;
+		if (correcttz)
+		{
+			if (date.getHours() >= 17)
+				mod = -17;
+			else mod = 7;
+		}
+		return (60*date.getHours() + date.getMinutes()) + 60*mod;
 	}
 	
+//	public static Widget createLocationIDMapWidget(final double lat, final double lon)
+//	{
+//		
+//	}
 
 	/**
 	 * Generates a widget containing a temporal summary of the bucketed mobility data. If buckets contains all ERROR modes, this will be indicated via a text overlay on the graph. All invalid parameters returns null
@@ -110,9 +123,9 @@ public class EventUtils {
 	 * @param showLegend True to show a legend on the right of the plot (this would reduce the plot size); False to hide
 	 * @return the HTML5 canvas widget
 	 */
-	public static Widget createLocationEventsBarChartCanvasWidget(final List<EventLabel> buckets, final int interval, final int width, final int height, boolean showAxisLabels, boolean showLegend, HashMap<String, EventInfo> labelMap) {
+	public static Widget createLocationEventsBarChartCanvasWidget(final List<EventLabel> buckets, final int interval, final int width, final int height, boolean showAxisLabels, boolean showLegend, HashMap<String, EventInfo> labelMap, Map<String, String> colorTable) {
 		// Color mapping for each MobilityMode; this is hardcoded here for function portability
-		Map<String, String> colorTable = EventUtils.getEventColorMap(labelMap);
+		colorTable = EventUtils.getEventColorMap(labelMap);
 		
 		//--- (0) Error checking
 		if (buckets == null || buckets.size() == 0 || interval <= 0 || width <= 0 || height <= 0) {
@@ -132,7 +145,7 @@ public class EventUtils {
 		Context2d context = canvas.getContext2d();
 		
 		int axisLabelHeight = (showAxisLabels) ? 20 : 0;
-		int legendWidth = (showLegend) ? 110 : 0;
+		int legendWidth = (showLegend) ? 200 : 0;
 		int plotXoffset = (showAxisLabels) ? 20 : 0;
 		int plotYoffset = (showAxisLabels) ? 10 : 0;
 		int plotWidth = width - 2*plotXoffset - legendWidth;
@@ -216,14 +229,178 @@ public class EventUtils {
 			h = (double) plotHeight;
 			
 			// Determine color
-			context.setFillStyle(CssColor.make(colorTable.get(buckets.get(i))));
+			String color = colorTable.get(buckets.get(i).toString());
+			int z = 0;
+			if (i > 100)
+				z = 1;
+			if (color == null)
+				color = colorTable.get(MobilityMode.ERROR);
+			context.setFillStyle(CssColor.make(color));
 			
 			// Draw rectangle
 			context.fillRect(x,y,w,h);
 			
 			// Increment position
 			x_pos += w;
-			if (buckets.get(i).equals(EventLabel.EmptyLabel().toString()) == false)
+			if (buckets.get(i).equals(EventLabel.EmptyLabel()) == false)
+				hasPlottableData = true;
+		}
+		
+		// Fill overflow (if any) with gray rectangles 
+		if (overflow > 0) {
+			double x, y, w, h;
+			x = plotYoffset + x_pos;
+			y = plotYoffset;
+			w = plotWidth - x_pos;
+			h = (double) plotHeight;
+			context.setFillStyle(CssColor.make(colorTable.get(MobilityMode.ERROR)));
+			context.fillRect(x,y,w,h);
+		}
+		
+		// Draw "No data" text if empty
+		if (hasPlottableData == false) {
+			double x, y;
+			
+			// Determine x,y,w,h to draw rect
+			x = plotXoffset + (double)plotWidth / 2.0;
+			y = plotYoffset + (double)plotHeight / 2.0;
+			
+			// Draw text label
+			String str = "(no valid mobility data for this day)";
+			context.setShadowColor("#FFFFFF");
+			context.setShadowOffsetX(0.0);
+			context.setShadowOffsetY(0.0);
+			context.setShadowBlur(8.0);
+			context.setFillStyle(CssColor.make("#333"));
+			context.setFont("bold 14pt Arial");
+			context.setTextAlign(TextAlign.CENTER);
+			context.setTextBaseline(TextBaseline.MIDDLE);
+			context.fillText(str, x, y);
+		}
+		
+		return canvas;
+	}
+	
+	public static Widget createActivityEventsBarChartCanvasWidget(final List<EventLabel> buckets, final int interval, final int width, final int height, boolean showAxisLabels, boolean showLegend, HashMap<String, EventInfo> labelMap) {
+		// Color mapping for each MobilityMode; this is hardcoded here for function portability
+		Map<String, String> colorTable = EventUtils.getEventColorMap(labelMap);
+		
+		//--- (0) Error checking
+		if (buckets == null || buckets.size() == 0 || interval <= 0 || width <= 0 || height <= 0) {
+			return null;
+		}
+		
+		//--- (1) Set up canvas, determine offsets
+		Canvas canvas = Canvas.createIfSupported();
+		if (canvas == null)
+			return null;
+		
+		canvas.setWidth(Integer.toString(width));
+		canvas.setHeight(Integer.toString(height));
+		canvas.setCoordinateSpaceWidth(width);
+		canvas.setCoordinateSpaceHeight(height);
+		
+		Context2d context = canvas.getContext2d();
+		
+		int axisLabelHeight = (showAxisLabels) ? 20 : 0;
+		int legendWidth = (showLegend) ? 200 : 0;
+		int plotXoffset = (showAxisLabels) ? 20 : 0;
+		int plotYoffset = (showAxisLabels) ? 10 : 0;
+		int plotWidth = width - 2*plotXoffset - legendWidth;
+		int plotHeight = height - 2*plotYoffset - axisLabelHeight;
+		
+		// --- (2) Draw X-axis
+		if (showAxisLabels) {
+			final int hourInterval = 3;	// NOTE: Must be a common factor of 24
+			for (int hour = 0; hour <= 24; hour += hourInterval) {
+				// Calculate tick mark origin
+				double x, y;
+				x = plotXoffset + (double)hour * (double)plotWidth / 24.0;
+				y = plotYoffset + plotHeight;
+				
+				// Draw tick mark
+				context.setLineWidth(1);
+				context.setStrokeStyle(CssColor.make("#CCCCCC"));
+				context.beginPath();
+				context.moveTo(x, y+3);
+				context.lineTo(x, y+10);
+				context.stroke();
+				
+				// Draw label underneath tick mark
+				String str = getPrettyHourStr(hour);
+				context.setFillStyle(CssColor.make("#666666"));
+				context.setFont("bold 8pt Arial");
+				context.setTextAlign(TextAlign.CENTER);
+				context.setTextBaseline(TextBaseline.TOP);
+				context.fillText(str, x, y+10);
+			}
+		}
+		
+		// --- (3) Draw legend
+		if (showLegend) {
+			double legendYspacing = (double)plotHeight / (double)colorTable.size();
+			double legendYoffset = legendYspacing / 2.0;
+			double legendXoffset = 40;
+			
+			int keyCount = 0;
+			for (String m : colorTable.keySet()) {
+				// Calculate offset for the color icon and text label
+				double x, y, w, h;
+				x = plotXoffset + plotWidth + legendXoffset;
+				y = plotYoffset + legendYoffset + legendYspacing*keyCount;
+				w = 30.0;
+				h = legendYspacing - 4.0;
+				
+				// Draw color icon
+				context.setFillStyle(CssColor.make(colorTable.get(m)));
+				context.fillRect(x, y - (h / 2.0), w, h);
+				
+				// Draw text label
+				String str = m.toString();
+				context.setFillStyle(CssColor.make("#000000"));
+				context.setFont("bold 8pt Arial");
+				context.setTextAlign(TextAlign.LEFT);
+				context.setTextBaseline(TextBaseline.MIDDLE);
+				context.fillText(str, x+w+4, y);
+				
+				keyCount++;
+			}
+		}
+		
+		// --- (4) Now, draw the plot
+		final int overflow = 24*60 - buckets.size()*interval;
+		final double stretchFactor = (double)plotWidth / (24*60);
+		boolean hasPlottableData = false;
+		
+		// Draw white background for plot
+		context.setFillStyle(CssColor.make("#FFFFFF"));
+		context.fillRect(plotXoffset, plotYoffset, plotWidth, plotHeight);
+		
+		double x_pos = 0;
+		for (int i = 0; i < buckets.size(); i++) {
+			double x, y, w, h;
+			
+			// Determine x,y,w,h to draw rect
+			x = plotXoffset + x_pos;
+			y = plotYoffset;
+			w = stretchFactor * (double) interval;
+			h = (double) plotHeight;
+			
+			// Determine color
+			String color = colorTable.get(buckets.get(i).toString());
+			int z = 0;
+			if (i > 100)
+				z = 1;
+			if (color == null)
+				color = colorTable.get(MobilityMode.ERROR);
+			context.setFillStyle(CssColor.make(color));
+			
+			// Draw rectangle
+			context.fillRect(x,y,w,h);
+			
+			// Increment position
+			x_pos += w;
+			if (buckets.get(i).equals(EventLabel.EmptyLabel()) == false)
 				hasPlottableData = true;
 		}
 		
@@ -451,7 +628,7 @@ public class EventUtils {
 	public static List<EventLabel> bucketByInterval(final List<EventInfo> data, final int intervalInMinutes) {
 		// Validate parameters
 		if (data == null || intervalInMinutes <= 0) {
-			return null;
+			return new ArrayList<EventLabel>();
 		}
 		
 		boolean generateBlankPlot = (data.size() == 0);
@@ -470,15 +647,17 @@ public class EventUtils {
 		{
 			if (generateBlankPlot == false) {
 				// Fill up bucket with mobility data within current interval
-				if (curIndex < data.size()) 
+				if (curIndex < data.size())
 				{
 					EventInfo m = data.get(curIndex);
 					
 					// Compute the day's mobility time in minutes
 					int curTimeInMin = getTimeInMinutes(m.getDate());
+					
 					int endTimeInMin = curTimeInMin + (int)m.getDuration() / 60;
 					// Check if the current mobility point is within the current interval
-					if (curTimeInMin < i * intervalInMinutes) {
+					if (curTimeInMin < i * intervalInMinutes) 
+					{
 						bucket.add(m);
 						if (endTimeInMin < i * intervalInMinutes) // only if done
 						{

@@ -825,7 +825,7 @@ public class AwDataTranslators {
 					evInfo.setType(EventType.fromServerString(type));
 					
 					evInfo.setDate(new Date(awData.getTime()));//new Date((long)eventObject.get("t").isNumber().doubleValue()));
-					evInfo.setTimezone("America/Los Angeles");
+					evInfo.setTimezone("America/Los Angeles"); // TODO make this get it from json
 					
 					//mobInfo.setDate(DateUtils.translateFromServerFormat(awData.getTimestamp()));	//original
 //					evInfo.setTimezone(awData.getTimezone());
@@ -850,11 +850,12 @@ public class AwDataTranslators {
 //							evInfo.setLabel(eventObject.get("name").isString().stringValue());
 							evInfo.setDuration((long)eventObject.get("duration").isNumber().doubleValue());
 							evInfo.setApps(parseApps(eventObject.get("name")));
-							evInfo.setLabel("apps");
+							evInfo.setLabel("apps"); // TODO get real id like from location
 							break;
 						case SMS:
 							evInfo.setLabel(eventObject.get("name").isString().stringValue());
 							evInfo.setDirection(eventObject.get("direction").isString().stringValue());
+							evInfo.setDuration((long)eventObject.get("duration").isNumber().doubleValue());
 							break;
 						case CALL:
 							evInfo.setLabel(eventObject.get("name").isString().stringValue());

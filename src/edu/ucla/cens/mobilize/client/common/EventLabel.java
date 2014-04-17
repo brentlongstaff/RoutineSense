@@ -17,6 +17,11 @@ public class EventLabel {
 		// TODO Auto-generated method stub
 		return new EventLabel("EMPTY_LABEL");
 	}
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		return name == ((EventLabel)obj).name;
+	}
 
 	
 }
