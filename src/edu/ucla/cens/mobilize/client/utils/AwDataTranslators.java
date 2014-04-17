@@ -816,6 +816,7 @@ public class AwDataTranslators {
 			JSONArray eventList = dataHash.get(type).isArray();
 			if (eventList == null)
 				continue;
+			Map<EventType, Integer> indexes = new HashMap<EventType, Integer>();
 			for (int i = 0; i < eventList.size(); i++) {
 				try {
 					//parse mobility array JSON
@@ -826,18 +827,25 @@ public class AwDataTranslators {
 					
 					evInfo.setDate(new Date(awData.getTime()));//new Date((long)eventObject.get("t").isNumber().doubleValue()));
 					evInfo.setTimezone("America/Los Angeles"); // TODO make this get it from json
-					
+					if (!indexes.containsKey(evInfo.getType()))
+						indexes.put(evInfo.getType(), 0);
 					//mobInfo.setDate(DateUtils.translateFromServerFormat(awData.getTimestamp()));	//original
 //					evInfo.setTimezone(awData.getTimezone());
 //					evInfo.setLocationStatus(LocationStatus.fromServerString(awData.getLocStatus()));
+					
+					evInfo.setEventLabel(""+indexes.get(evInfo.getType()));
+					indexes.put(evInfo.getType(), indexes.get(evInfo.getType()) + 1);
+					
 					switch(evInfo.getType())
 					{
+					
 						case LOCATION: 
 //							MobilityLocationAwData l = awData.getLocation();
 							evInfo.setLatitude(eventObject.get("latitude").isNumber().doubleValue());
 							evInfo.setLongitude(eventObject.get("longitude").isNumber().doubleValue());
 							evInfo.setDuration((long)eventObject.get("duration").isNumber().doubleValue());
 							evInfo.setLabel(eventObject.get("id").isString().stringValue());
+							
 //							evInfo.setLocationAccuracy(awData.getAccuracy());
 //							evInfo.setLocationProvider(l.getProvider());
 //							evInfo.setLocationTimestamp(new Date(l.getTime()));

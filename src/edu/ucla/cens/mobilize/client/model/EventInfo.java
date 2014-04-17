@@ -14,9 +14,15 @@ public class EventInfo
 	String tz;			//timezone
 	Long duration;		// length in seconds
 	String label;		// depends on the type, could be app name or collection of apps name or activity mode &c
-	
+	String eventLabel;
 	// descriptors to describe events to users
 	
+	public String getEventLabel() {
+		return eventLabel;
+	}
+	public void setEventLabel(String eventLabel) {
+		this.eventLabel = eventLabel;
+	}
 	// location
 	double latitude;
 	double longitude;

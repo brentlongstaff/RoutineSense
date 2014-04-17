@@ -14,6 +14,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.CssColor;
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
+import com.google.gwt.user.client.rpc.core.java.util.Arrays;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.EventLabel;
@@ -98,7 +99,7 @@ public class EventUtils {
 	 */
 	public static int getTimeInMinutes(Date date) {
 		int mod = 0;
-		boolean correcttz = true;
+		boolean correcttz = false;
 		if (correcttz)
 		{
 			if (date.getHours() >= 17)
@@ -125,7 +126,7 @@ public class EventUtils {
 	 */
 	public static Widget createLocationEventsBarChartCanvasWidget(final List<EventLabel> buckets, final int interval, final int width, final int height, boolean showAxisLabels, boolean showLegend, HashMap<String, EventInfo> labelMap, Map<String, String> colorTable) {
 		// Color mapping for each MobilityMode; this is hardcoded here for function portability
-		colorTable = EventUtils.getEventColorMap(labelMap);
+		
 		
 		//--- (0) Error checking
 		if (buckets == null || buckets.size() == 0 || interval <= 0 || width <= 0 || height <= 0) {
@@ -185,7 +186,10 @@ public class EventUtils {
 			double legendXoffset = 40;
 			
 			int keyCount = 0;
-			for (String m : colorTable.keySet()) {
+			ArrayList<String> orderedKeys = new ArrayList<String>(); 
+			orderedKeys.addAll(colorTable.keySet());
+			Collections.sort(orderedKeys);
+			for (String m : orderedKeys) {
 				// Calculate offset for the color icon and text label
 				double x, y, w, h;
 				x = plotXoffset + plotWidth + legendXoffset;
@@ -663,7 +667,7 @@ public class EventUtils {
 						{
 							curIndex++;
 						}
-						bucketedLabels.add(new EventLabel(m.getLabel()));
+						bucketedLabels.add(new EventLabel(m.getEventLabel()));
 						continue;
 					} 
 //					else {

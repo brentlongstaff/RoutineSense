@@ -47,6 +47,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SourcesTreeEvents;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -911,7 +912,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		}
 	}
 	
-	public void showLocationIDOnMap(final List<EventInfo> mdata, final HorizontalPanel panel) {
+	public void showLocationIDOnMap(final List<EventInfo> mdata, final VerticalPanel panel, final Map<String, String> locColors) {
 		// hide previous plot, if any
 //		clearPlot(); 
 
@@ -919,20 +920,27 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 //		if (mapWidget == null) { // lazy init map, add responses when done
 		List<EventInfo> distinct = new ArrayList<EventInfo>();
 		List<String> seenLabels = new ArrayList<String>();
-		for (final EventInfo m : mdata)
-			if (!seenLabels.contains(m.getLabel()))
+		for (EventInfo m : mdata)
+//			if (!seenLabels.contains(m.getEventLabel()))
 			{
-				seenLabels.add(m.getLabel());
+				seenLabels.add(m.getEventLabel());
 				distinct.add(m);
 			}
-		for (final EventInfo m : distinct)
+//		int index = 0;
+//		for (final EventInfo m : distinct)
+		for (int i = 0; i < distinct.size(); i++)
+		{
+			final EventInfo m = distinct.get(i);
+			final int index = i;
 			initLocationIDMap(new Runnable() {
+		
 				@Override
 				public void run() {
-					drawLocationIDOnMap(m, panel);
+					drawLocationIDOnMap(m, panel, locColors, "location_event_" + index);
 //					hideWaitIndicator();
 				}
 			});
+		}
 //		} else { // map already initialized
 //			drawLocationIDOnMap(mdata, panel);
 //		}
@@ -1044,7 +1052,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		mapWidget.getMap().fitBounds(bounds); 
 	}
 	
-	private void drawLocationIDOnMap(final EventInfo ei, HorizontalPanel panel) {
+	private void drawLocationIDOnMap(final EventInfo ei, VerticalPanel panel, Map<String, String> locColors, String name) {
 		// Clear any previous data points    
 //		clearOverlays();
 
@@ -1089,12 +1097,30 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
 			}
 //		}
-			Label locLabel = new Label(ei.getLabel());
-			String htmlStr = "<span style='color: "+"blue"+"'>"+SafeHtmlUtils.htmlEscape("Text!!!!")+"</span>";
+//			String name = 
+			Label locLabel = new Label(ei.getEventLabel());
+			String htmlStr = "<span style='color: "+ locColors.get(ei.getEventLabel())  +"; font-size: 20pt'>"+SafeHtmlUtils.htmlEscape(ei.getEventLabel())+"</span>";
 			HTML html = new HTML(htmlStr);
 			locLabel = html;
-			panel.add(locLabel);
-			panel.add(locationIDs.get(locationIDs.size() - 1));
+			HorizontalPanel eventPanel = new HorizontalPanel();
+			eventPanel.add(locLabel);
+			// form response
+			Label routineQuestion = new Label("Is this a typical event in your routine?");
+			RadioButton radioButtonYes = new RadioButton("routineGroup"+ ei.getEventLabel(), "Yes");
+		    RadioButton radioButtonNo = new RadioButton("routineGroup"+ ei.getEventLabel(), "No");
+		    VerticalPanel routinePanel = new VerticalPanel();
+		    routinePanel.add(routineQuestion);
+		    routinePanel.add(radioButtonYes);
+		    routinePanel.add(radioButtonNo);
+		    eventPanel.add(routinePanel);
+		    
+
+			
+			
+			eventPanel.add(locationIDs.get(locationIDs.size() - 1));
+			
+			
+			panel.add(eventPanel);
 //		if (!locationIDs.get(locationIDs.size() - 1).isAttached()) gpanel.add(locationIDs.get(locationIDs.size() - 1));
 //		plotContainer.add(gpanel);
 		// Zoom and center the map to the new bounds
@@ -1161,13 +1187,13 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		HashMap<EventType, List<EventInfo>> mdataAsLists = new HashMap<EventType, List<EventInfo>>();
 		for (int i = 0; i < mdataList.size(); i++) {
 			EventInfo mdata = mdataList.get(i);
-			if (mdata.getLabel() == null)
+			if (mdata.getEventLabel() == null)
 				mdata = null;
 			// make all legend info available by name
 			if (!labelMaps.containsKey(mdata.getType()))
 				labelMaps.put(mdata.getType(), new HashMap<String, EventInfo>());
-			if (!labelMaps.get(mdata.getType()).containsKey(mdata.getLabel().toString()))
-				labelMaps.get(mdata.getType()).put(mdata.getLabel().toString(), mdata);
+			if (!labelMaps.get(mdata.getType()).containsKey(mdata.getEventLabel().toString()))
+				labelMaps.get(mdata.getType()).put(mdata.getEventLabel().toString(), mdata);
 			if (!mdataAsLists.containsKey(mdata.getType()))
 				mdataAsLists.put(mdata.getType(), new ArrayList<EventInfo>());
 			// make sure bucket list of this type of event is available
@@ -1218,12 +1244,18 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 //			drawLocationIDOnMap(mdataAsLists.get(EventType.LOCATION));
 //		}
 		
-		HorizontalPanel locPanel = new HorizontalPanel();
+		VerticalPanel locPanel = new VerticalPanel();
 
 		if (locationViz != null)
 		{
 			panels.add(locationViz);
-			showLocationIDOnMap(mdataFinal.get(EventType.LOCATION), locPanel);
+			showLocationIDOnMap(mdataFinal.get(EventType.LOCATION), locPanel, locColors);
+			if (!locPanel.isAttached())
+			{
+//				clearOverlays(); // TODO do we need this?
+				panels.add(locPanel);
+			}
+			
 		}
 		if (activityViz != null)
 			panels.add(activityViz);
@@ -1238,21 +1270,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		plotContainer.add(panels);
 //		if (gpanel == null)
 //			gpanel = new HorizontalPanel();
-		if (!locPanel.isAttached())
-		{
-//			gpanel.clear();
-//			locPanel.add(new Label("duck"));
 		
-			clearOverlays();
-		 
-			plotContainer.add(locPanel);
-			
-			
-//			showLocationIDOnMap(mdataFinal.get(EventType.LOCATION), locPanel);
-			
-//			plotContainer.add(locPanel);
-//			locPanel.add(new Label(""+((MapWidget)locPanel.getWidget(1)).getMap().getZoom()));
-		}
 			
 		
 		
