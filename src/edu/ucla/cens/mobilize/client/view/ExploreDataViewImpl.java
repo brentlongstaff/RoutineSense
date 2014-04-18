@@ -35,6 +35,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -1104,6 +1105,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			locLabel = html;
 			HorizontalPanel eventPanel = new HorizontalPanel();
 			eventPanel.add(locLabel);
+			eventPanel.add(locationIDs.get(locationIDs.size() - 1));
 			// form response
 			Label routineQuestion = new Label("Is this a typical event in your routine?");
 			RadioButton radioButtonYes = new RadioButton("routineGroup"+ ei.getEventLabel(), "Yes");
@@ -1114,10 +1116,17 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		    routinePanel.add(radioButtonNo);
 		    eventPanel.add(routinePanel);
 		    
-
+		    Label boundaryQuestion = new Label("If it's a routine event, are the beginning and end times typical?");
+		    CheckBox checkBoxBegin = new CheckBox("Beginning");
+		    CheckBox checkBoxEnd = new CheckBox("End");
+		    VerticalPanel boundaryPanel = new VerticalPanel();
+		    boundaryPanel.add(boundaryQuestion);
+		    boundaryPanel.add(checkBoxBegin);
+		    boundaryPanel.add(checkBoxEnd);
+		    eventPanel.add(boundaryPanel);
 			
+			Label otherQuestions = new Label("Are there any problems with this event as detected?");
 			
-			eventPanel.add(locationIDs.get(locationIDs.size() - 1));
 			
 			
 			panel.add(eventPanel);
