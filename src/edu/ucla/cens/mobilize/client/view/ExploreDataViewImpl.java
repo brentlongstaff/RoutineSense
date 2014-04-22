@@ -50,11 +50,14 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SourcesTreeEvents;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.ValueBoxBase.TextAlignment;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.maps.client.MapOptions;
 import com.google.gwt.maps.client.MapTypeId;
@@ -946,6 +949,104 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 //			drawLocationIDOnMap(mdata, panel);
 //		}
 	}
+	
+	public void showActivityEvent(final List<EventInfo> mdata, VerticalPanel panel, Map<String, String> colorMap) {
+		for (EventInfo ei : mdata)
+		{
+			HorizontalPanel actEventPanel = new HorizontalPanel();
+			String htmlStr = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+SafeHtmlUtils.htmlEscape(ei.getEventLabel() + " (" + ei.getLabel() + ")")+"</span>";
+			HTML html = new HTML(htmlStr);
+			Label actLabel = html;
+			actLabel.setWidth(labeledLabelWidth + "px");
+			actEventPanel.add(actLabel);
+
+			Label routineQuestion = new Label("Is this a typical event in your routine?");
+			routineQuestion.setWidth(routineWidth + "px");
+			RadioButton radioButtonYes = new RadioButton("actRoutineGroup"+ ei.getEventLabel(), "Yes");
+		    RadioButton radioButtonNo = new RadioButton("actRoutineGroup"+ ei.getEventLabel(), "No");
+		    VerticalPanel routinePanel = new VerticalPanel();
+		    routinePanel.add(routineQuestion);
+		    routinePanel.add(radioButtonYes);
+		    routinePanel.add(radioButtonNo);
+		    actEventPanel.add(routinePanel);
+		    
+		    Label boundaryQuestion = new Label("If it's a routine event, are the beginning and/or end times typical?");
+		    boundaryQuestion.setWidth(boundaryWidth - 50 + "px");
+		    
+		    CheckBox checkBoxBegin = new CheckBox("Beginning");
+		    CheckBox checkBoxEnd = new CheckBox("End");
+		    VerticalPanel boundaryPanel = new VerticalPanel();
+		    boundaryPanel.setWidth(boundaryWidth + "px");
+		    boundaryPanel.add(boundaryQuestion);
+		    boundaryPanel.add(checkBoxBegin);
+		    boundaryPanel.add(checkBoxEnd);
+		    actEventPanel.add(boundaryPanel);
+			
+			Label otherQuestions = new Label("Are there any problems with this event as detected?");
+			VerticalPanel otherPanel = new VerticalPanel();
+			TextArea textbox = new TextArea();
+			textbox.setWidth(otherWidth + "px");
+	//		textbox.setHeight(200 + "px");
+	//		textbox.setAlignment(TextAlignment.LEFT);
+			textbox.setVisibleLines(10);
+			otherPanel.add(otherQuestions);
+			otherPanel.setWidth(otherWidth + "px");
+			otherPanel.add(textbox);
+			actEventPanel.add(otherPanel);
+			
+			actEventPanel.setHeight(eventHeight + "px");
+			panel.add(actEventPanel);
+		}
+	}
+	
+	public void showAppEvent(final List<EventInfo> mdata, VerticalPanel panel, Map<String, String> colorMap) {
+		for (EventInfo ei : mdata)
+		{
+			HorizontalPanel actEventPanel = new HorizontalPanel();
+			String htmlStr = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+SafeHtmlUtils.htmlEscape(ei.getEventLabel() + " (" + ei.getLabel() + ")")+"</span>";
+			HTML html = new HTML(htmlStr);
+			Label actLabel = html;
+			actLabel.setWidth(labeledLabelWidth + "px");
+			actEventPanel.add(actLabel);
+
+			Label routineQuestion = new Label("Is this a typical event in your routine?");
+			routineQuestion.setWidth(routineWidth + "px");
+			RadioButton radioButtonYes = new RadioButton("actRoutineGroup"+ ei.getEventLabel(), "Yes");
+		    RadioButton radioButtonNo = new RadioButton("actRoutineGroup"+ ei.getEventLabel(), "No");
+		    VerticalPanel routinePanel = new VerticalPanel();
+		    routinePanel.add(routineQuestion);
+		    routinePanel.add(radioButtonYes);
+		    routinePanel.add(radioButtonNo);
+		    actEventPanel.add(routinePanel);
+		    
+		    Label boundaryQuestion = new Label("If it's a routine event, are the beginning and/or end times typical?");
+		    boundaryQuestion.setWidth(boundaryWidth - 50 + "px");
+		    
+		    CheckBox checkBoxBegin = new CheckBox("Beginning");
+		    CheckBox checkBoxEnd = new CheckBox("End");
+		    VerticalPanel boundaryPanel = new VerticalPanel();
+		    boundaryPanel.setWidth(boundaryWidth + "px");
+		    boundaryPanel.add(boundaryQuestion);
+		    boundaryPanel.add(checkBoxBegin);
+		    boundaryPanel.add(checkBoxEnd);
+		    actEventPanel.add(boundaryPanel);
+			
+			Label otherQuestions = new Label("Are there any problems with this event as detected?");
+			VerticalPanel otherPanel = new VerticalPanel();
+			TextArea textbox = new TextArea();
+			textbox.setWidth(otherWidth + "px");
+	//		textbox.setHeight(200 + "px");
+	//		textbox.setAlignment(TextAlignment.LEFT);
+			textbox.setVisibleLines(10);
+			otherPanel.add(otherQuestions);
+			otherPanel.setWidth(otherWidth + "px");
+			otherPanel.add(textbox);
+			actEventPanel.add(otherPanel);
+			
+			actEventPanel.setHeight(eventHeight + "px");
+			panel.add(actEventPanel);
+		}
+	}
 
 	@Override
 	public void showMobilityDashboard(final List<MobilityInfo> mdata) {
@@ -1053,10 +1154,20 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		mapWidget.getMap().fitBounds(bounds); 
 	}
 	
+	int labelWidth = 40;
+	int routineWidth = 250;
+	int boundaryWidth = 250;
+	int mapWidthSpacing = 230;
+	int mapWidth = 200;
+	int eventHeight = 250;
+	int otherWidth = 200;
+	int labeledLabelWidth = 120;
+	
 	private void drawLocationIDOnMap(final EventInfo ei, VerticalPanel panel, Map<String, String> locColors, String name) {
 		// Clear any previous data points    
 //		clearOverlays();
-
+		
+		
 		// Show error message if user has no mobility data
 		if (ei == null) {
 			ErrorDialog.show("Sorry, we couldn't find any mobility data for the selected date(s).");
@@ -1103,33 +1214,55 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			String htmlStr = "<span style='color: "+ locColors.get(ei.getEventLabel())  +"; font-size: 20pt'>"+SafeHtmlUtils.htmlEscape(ei.getEventLabel())+"</span>";
 			HTML html = new HTML(htmlStr);
 			locLabel = html;
-			HorizontalPanel eventPanel = new HorizontalPanel();
-			eventPanel.add(locLabel);
-			eventPanel.add(locationIDs.get(locationIDs.size() - 1));
+			HorizontalPanel locEventPanel = new HorizontalPanel();
+			locLabel.setWidth(labelWidth + "px");
+			locEventPanel.add(locLabel);
+//			eventPanel.add(new Label("sdfsdffdsfs "));
+			MapWidget locMapWidget = locationIDs.get(locationIDs.size() - 1);
+//			locMapWidget.set(mapWidthSpacing + "px");
+			HorizontalPanel mapPanel = new HorizontalPanel();
+			mapPanel.add(locMapWidget);
+			mapPanel.setWidth(mapWidthSpacing + "px");
+			locEventPanel.add(mapPanel);
 			// form response
+//			eventPanel.add(new Label("           "));
 			Label routineQuestion = new Label("Is this a typical event in your routine?");
+			routineQuestion.setWidth(routineWidth + "px");
 			RadioButton radioButtonYes = new RadioButton("routineGroup"+ ei.getEventLabel(), "Yes");
 		    RadioButton radioButtonNo = new RadioButton("routineGroup"+ ei.getEventLabel(), "No");
 		    VerticalPanel routinePanel = new VerticalPanel();
 		    routinePanel.add(routineQuestion);
 		    routinePanel.add(radioButtonYes);
 		    routinePanel.add(radioButtonNo);
-		    eventPanel.add(routinePanel);
+		    locEventPanel.add(routinePanel);
 		    
-		    Label boundaryQuestion = new Label("If it's a routine event, are the beginning and end times typical?");
+		    Label boundaryQuestion = new Label("If it's a routine event, are the beginning and/or end times typical?");
+		    boundaryQuestion.setWidth(boundaryWidth - 50 + "px");
+		    
 		    CheckBox checkBoxBegin = new CheckBox("Beginning");
 		    CheckBox checkBoxEnd = new CheckBox("End");
 		    VerticalPanel boundaryPanel = new VerticalPanel();
+		    boundaryPanel.setWidth(boundaryWidth + "px");
 		    boundaryPanel.add(boundaryQuestion);
 		    boundaryPanel.add(checkBoxBegin);
 		    boundaryPanel.add(checkBoxEnd);
-		    eventPanel.add(boundaryPanel);
+		    locEventPanel.add(boundaryPanel);
 			
 			Label otherQuestions = new Label("Are there any problems with this event as detected?");
+			VerticalPanel otherPanel = new VerticalPanel();
+			TextArea textbox = new TextArea();
+			textbox.setWidth(200 + "px");
+//			textbox.setHeight(200 + "px");
+//			textbox.setAlignment(TextAlignment.LEFT);
+			textbox.setVisibleLines(10);
+			otherPanel.add(otherQuestions);
+			otherPanel.setWidth(200 + "px");
+			otherPanel.add(textbox);
+			locEventPanel.add(otherPanel);
 			
+			locEventPanel.setHeight(eventHeight + "px");
+			panel.add(locEventPanel);
 			
-			
-			panel.add(eventPanel);
 //		if (!locationIDs.get(locationIDs.size() - 1).isAttached()) gpanel.add(locationIDs.get(locationIDs.size() - 1));
 //		plotContainer.add(gpanel);
 		// Zoom and center the map to the new bounds
@@ -1178,13 +1311,14 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		
 		final int interval = 5;	// minutes
 		HashMap<EventType, List<EventLabel>> buckets = new HashMap<EventType, List<EventLabel>>();//  EventUtils.bucketByInterval(mdata, interval);
-		
+		HashMap<EventType, List<String>> orderedLabels = new HashMap<EventType, List<String>>();
 		EventType[] allTypes = new EventType [] { EventType.ACTIVITY, EventType.APP, EventType.CALL, EventType.SMS, EventType.LOCATION };
 		HashMap<EventType, HashMap<String, EventInfo>> labelMaps = new HashMap<EventType, HashMap<String, EventInfo>>();
 		for (EventType type : allTypes)
 		{
 			buckets.put(type, new ArrayList<EventLabel>());
 			labelMaps.put(type, new HashMap<String, EventInfo>());
+			orderedLabels.put(type, new ArrayList<String>());
 		}
 //		buckets.put(EventType.LOCATION, new ArrayList<EventLabel>());
 //		buckets.put(EventType.SMS, new ArrayList<EventLabel>());
@@ -1200,11 +1334,20 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 				mdata = null;
 			// make all legend info available by name
 			if (!labelMaps.containsKey(mdata.getType()))
+			{
 				labelMaps.put(mdata.getType(), new HashMap<String, EventInfo>());
+				
+			}
 			if (!labelMaps.get(mdata.getType()).containsKey(mdata.getEventLabel().toString()))
+			{
 				labelMaps.get(mdata.getType()).put(mdata.getEventLabel().toString(), mdata);
+				orderedLabels.get(mdata.getType()).add(mdata.getEventLabel().toString());
+			}
 			if (!mdataAsLists.containsKey(mdata.getType()))
+			{
 				mdataAsLists.put(mdata.getType(), new ArrayList<EventInfo>());
+				
+			}
 			// make sure bucket list of this type of event is available
 			if (!buckets.containsKey(mdata.getType()))
 				buckets.put(mdata.getType(), new ArrayList<EventLabel>());
@@ -1213,25 +1356,27 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			mdataAsLists.get(mdata.getType()).add(mdata);
 		}
-//		if (mdata.getType().equals(EventType.LOCATION)) // TODO REMOVE
-			buckets.get(EventType.LOCATION).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.LOCATION), interval));
-			buckets.get(EventType.ACTIVITY).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.ACTIVITY), interval));
-			buckets.get(EventType.APP).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.APP), interval));
-			buckets.get(EventType.SMS).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.SMS), interval));
-			buckets.get(EventType.CALL).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.CALL), interval));
+		buckets.get(EventType.LOCATION).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.LOCATION), interval));
+		buckets.get(EventType.ACTIVITY).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.ACTIVITY), interval));
+		buckets.get(EventType.APP).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.APP), interval));
+		buckets.get(EventType.SMS).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.SMS), interval));
+		buckets.get(EventType.CALL).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.CALL), interval));
 		
 		DateTimeFormat format = DateTimeFormat.getFormat("EEEE, MMMM dd, yyyy");
 		String day_str = format.format(DateUtils.addDays(getFromDate(), 1));
 		Label date_label = new Label(day_str);
 		panels.add(date_label);
 		Map<String, String> locColors = EventUtils.getEventColorMap(labelMaps.get(EventType.LOCATION));
-		Widget locationViz = EventUtils.createLocationEventsBarChartCanvasWidget(buckets.get(EventType.LOCATION), interval, 750, 120, true, true, labelMaps.get(EventType.LOCATION), locColors);
+		Map<String, String> actColors = EventUtils.getEventColorMap(labelMaps.get(EventType.ACTIVITY));
+		Map<String, String> smsColors = EventUtils.getEventColorMap(labelMaps.get(EventType.SMS));
+		Map<String, String> callColors = EventUtils.getEventColorMap(labelMaps.get(EventType.CALL));
+		Map<String, String> appColors = EventUtils.getEventColorMap(labelMaps.get(EventType.APP));
 		
-//			Widget viz2 = MobilityUtils.createMobilityBarChartCanvasWidget(buckets1, 1, 750, 120, true, true);
-		Widget activityViz = EventUtils.createActivityEventsBarChartCanvasWidget(buckets.get(EventType.ACTIVITY), interval, 750, 120, true, true, labelMaps.get(EventType.ACTIVITY));
-		Widget appViz = EventUtils.createActivityEventsBarChartCanvasWidget(buckets.get(EventType.APP), interval, 750, 120, true, true, labelMaps.get(EventType.APP));
-		Widget smsViz = EventUtils.createActivityEventsBarChartCanvasWidget(buckets.get(EventType.SMS), interval, 750, 120, true, true, labelMaps.get(EventType.SMS));
-		Widget callViz = EventUtils.createActivityEventsBarChartCanvasWidget(buckets.get(EventType.CALL), interval, 750, 120, true, true, labelMaps.get(EventType.CALL));
+		Widget locationViz = EventUtils.createLocationEventsBarChartCanvasWidget(buckets.get(EventType.LOCATION), interval, 750, 120, true, true, labelMaps.get(EventType.LOCATION), locColors, orderedLabels.get(EventType.LOCATION), false, null);
+		Widget activityViz = EventUtils.createLocationEventsBarChartCanvasWidget(buckets.get(EventType.ACTIVITY), interval, 750, 120, true, true, labelMaps.get(EventType.ACTIVITY), actColors, orderedLabels.get(EventType.ACTIVITY), true, null);
+		Widget appViz = EventUtils.createLocationEventsBarChartCanvasWidget(buckets.get(EventType.APP), interval, 750, 120, true, true, labelMaps.get(EventType.APP), appColors, orderedLabels.get(EventType.APP), false, null);
+		Widget smsViz = EventUtils.createLocationEventsBarChartCanvasWidget(buckets.get(EventType.SMS), interval, 750, 120, true, true, labelMaps.get(EventType.SMS), smsColors, orderedLabels.get(EventType.SMS), false, null);
+		Widget callViz = EventUtils.createLocationEventsBarChartCanvasWidget(buckets.get(EventType.CALL), interval, 750, 120, true, true, labelMaps.get(EventType.CALL), callColors, orderedLabels.get(EventType.CALL), false, null);
 		
 		// Event identification thingies
 		// location
@@ -1257,6 +1402,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
 		if (locationViz != null)
 		{
+			String htmlStr = "<span style='font-size: 30pt'>Location events</span>";
+			HTML html = new HTML(htmlStr);
+			Label locTitle = html;
+			panels.add(locTitle);
 			panels.add(locationViz);
 			showLocationIDOnMap(mdataFinal.get(EventType.LOCATION), locPanel, locColors);
 			if (!locPanel.isAttached())
@@ -1265,15 +1414,40 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 				panels.add(locPanel);
 			}
 			
+			
 		}
 		if (activityViz != null)
+		{
+			String htmlStr = "<span style='font-size: 30pt'>Activity events</span>";
+			HTML html = new HTML(htmlStr);
+			Label actTitle = html;
+			
+			panels.add(actTitle);
 			panels.add(activityViz);
+			VerticalPanel actPanel = new VerticalPanel();
+			showActivityEvent(mdataFinal.get(EventType.ACTIVITY), actPanel, actColors);
+			panels.add(actPanel);
+		}
 		if (appViz != null)
+		{
+			String htmlStr = "<span style='font-size: 30pt'>App usage events</span>";
+			HTML html = new HTML(htmlStr);
+			Label appTitle = html;
+			
+			panels.add(appTitle);
 			panels.add(appViz);
+			VerticalPanel appPanel = new VerticalPanel();
+			showActivityEvent(mdataFinal.get(EventType.APP), appPanel, appColors);
+			panels.add(appPanel);
+		}
 		if (smsViz != null)
+		{
 			panels.add(smsViz);
+		}
 		if (callViz != null)
+		{
 			panels.add(callViz);
+		}
 //			panels.add(viz2);
 //		}
 		plotContainer.add(panels);

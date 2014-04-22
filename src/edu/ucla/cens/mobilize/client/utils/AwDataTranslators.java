@@ -826,7 +826,8 @@ public class AwDataTranslators {
 					evInfo.setType(EventType.fromServerString(type));
 					
 					evInfo.setDate(new Date(awData.getTime()));//new Date((long)eventObject.get("t").isNumber().doubleValue()));
-					evInfo.setTimezone("America/Los Angeles"); // TODO make this get it from json
+//					evInfo.setTimezone("America/Los Angeles"); // TODO make this get it from json
+					evInfo.setTimezone(eventObject.get("tz").isString().stringValue());
 					if (!indexes.containsKey(evInfo.getType()))
 						indexes.put(evInfo.getType(), 0);
 					//mobInfo.setDate(DateUtils.translateFromServerFormat(awData.getTimestamp()));	//original
@@ -878,7 +879,7 @@ public class AwDataTranslators {
 					//add to list "mobilityInfos"
 					eventInfos.add(evInfo);
 				} catch (Exception e) {
-					_logger.warning("Could not parse json for mobility id: " + eventList.get(i) + ". Skipping record.");
+					_logger.warning("Could not parse json for evnt : " + eventList.get(i) + ". Skipping record.");
 					_logger.fine(e.getMessage());
 				}
 			}

@@ -124,7 +124,7 @@ public class EventUtils {
 	 * @param showLegend True to show a legend on the right of the plot (this would reduce the plot size); False to hide
 	 * @return the HTML5 canvas widget
 	 */
-	public static Widget createLocationEventsBarChartCanvasWidget(final List<EventLabel> buckets, final int interval, final int width, final int height, boolean showAxisLabels, boolean showLegend, HashMap<String, EventInfo> labelMap, Map<String, String> colorTable) {
+	public static Widget createLocationEventsBarChartCanvasWidget(final List<EventLabel> buckets, final int interval, final int width, final int height, boolean showAxisLabels, boolean showLegend, HashMap<String, EventInfo> labelMap, Map<String, String> colorTable, List<String> orderedLabels, boolean explain, HashMap<String, String> explanation) {
 		// Color mapping for each MobilityMode; this is hardcoded here for function portability
 		
 		
@@ -186,10 +186,10 @@ public class EventUtils {
 			double legendXoffset = 40;
 			
 			int keyCount = 0;
-			ArrayList<String> orderedKeys = new ArrayList<String>(); 
-			orderedKeys.addAll(colorTable.keySet());
-			Collections.sort(orderedKeys);
-			for (String m : orderedKeys) {
+//			ArrayList<String> orderedKeys = new ArrayList<String>(); 
+//			orderedKeys.addAll(colorTable.keySet());
+//			Collections.sort(orderedKeys);
+			for (String m : orderedLabels) {
 				// Calculate offset for the color icon and text label
 				double x, y, w, h;
 				x = plotXoffset + plotWidth + legendXoffset;
@@ -203,6 +203,8 @@ public class EventUtils {
 				
 				// Draw text label
 				String str = m.toString();
+				if (explain)
+					str += " (" + labelMap.get(m).getLabel() + ")";
 				context.setFillStyle(CssColor.make("#000000"));
 				context.setFont("bold 8pt Arial");
 				context.setTextAlign(TextAlign.LEFT);
