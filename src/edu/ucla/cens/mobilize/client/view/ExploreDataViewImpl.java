@@ -2,6 +2,7 @@ package edu.ucla.cens.mobilize.client.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,6 +28,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -954,11 +956,18 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		for (EventInfo ei : mdata)
 		{
 			HorizontalPanel actEventPanel = new HorizontalPanel();
-			String htmlStr = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+SafeHtmlUtils.htmlEscape(ei.getEventLabel() + " (" + ei.getLabel() + ")")+"</span>";
+			String htmlStr = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 40pt'>"+SafeHtmlUtils.htmlEscape(ei.getEventLabel() + " (" + ei.getLabel() + ")")+"</span>";
+			String htmlStr2 = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+ prettyTime(ei.getDate(), (int)ei.getDuration())+"</span>";
 			HTML html = new HTML(htmlStr);
+			HTML html2 = new HTML(htmlStr2);
 			Label actLabel = html;
+			Label actLabel2 = html2;
 			actLabel.setWidth(labeledLabelWidth + "px");
-			actEventPanel.add(actLabel);
+			actLabel2.setWidth(labeledLabelWidth + "px");
+			VerticalPanel labelPanel = new VerticalPanel();
+			labelPanel.add(html);
+			labelPanel.add(html2);
+			actEventPanel.add(labelPanel);
 
 			Label routineQuestion = new Label("Is this a typical event in your routine?");
 			routineQuestion.setWidth(routineWidth + "px");
@@ -999,25 +1008,49 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		}
 	}
 	
+	public static String digitString(int i)
+	{
+		if (i < 10)
+			return "0" + i;
+		else
+			return "" + i;
+	}
+	
+	public static String prettyTime(Date start, int durationInSeconds)
+	{
+		StringBuffer strb = new StringBuffer();
+		int carry = durationInSeconds / 60 + start.getMinutes() >= 60 ? 1 : 0;
+		strb.append(start.getHours()+":"+ digitString(start.getMinutes())+" - " + (start.getHours() + durationInSeconds/3600 + carry) + ":" + digitString((start.getMinutes() + durationInSeconds/60) % 60));
+		return strb.toString();
+	}
+	
 	public void showAppEvent(final List<EventInfo> mdata, VerticalPanel panel, Map<String, String> colorMap) {
 		for (EventInfo ei : mdata)
 		{
-			HorizontalPanel actEventPanel = new HorizontalPanel();
-			String htmlStr = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+SafeHtmlUtils.htmlEscape(ei.getEventLabel() + " (" + ei.getLabel() + ")")+"</span>";
+			HorizontalPanel appEventPanel = new HorizontalPanel();
+			String htmlStr = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 40pt'>"+ SafeHtmlUtils.htmlEscape(ei.getEventLabel())+"</span>"; 
+			String htmlStr2 = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+ prettyTime(ei.getDate(), (int)ei.getDuration())+"</span>";
 			HTML html = new HTML(htmlStr);
-			Label actLabel = html;
-			actLabel.setWidth(labeledLabelWidth + "px");
-			actEventPanel.add(actLabel);
+			HTML html2 = new HTML(htmlStr2);
+			Label appLabel = html;
+			Label appLabel2 = html2;
+			appLabel.setWidth(labeledLabelWidth + "px");
+			appLabel2.setWidth(labeledLabelWidth + "px");
+			VerticalPanel labelPanel = new VerticalPanel();
+			labelPanel.add(html);
+			labelPanel.add(html2);
+			appEventPanel.add(labelPanel);
+			
 
 			Label routineQuestion = new Label("Is this a typical event in your routine?");
 			routineQuestion.setWidth(routineWidth + "px");
-			RadioButton radioButtonYes = new RadioButton("actRoutineGroup"+ ei.getEventLabel(), "Yes");
-		    RadioButton radioButtonNo = new RadioButton("actRoutineGroup"+ ei.getEventLabel(), "No");
+			RadioButton radioButtonYes = new RadioButton("appRoutineGroup"+ ei.getEventLabel(), "Yes");
+		    RadioButton radioButtonNo = new RadioButton("appRoutineGroup"+ ei.getEventLabel(), "No");
 		    VerticalPanel routinePanel = new VerticalPanel();
 		    routinePanel.add(routineQuestion);
 		    routinePanel.add(radioButtonYes);
 		    routinePanel.add(radioButtonNo);
-		    actEventPanel.add(routinePanel);
+		    appEventPanel.add(routinePanel);
 		    
 		    Label boundaryQuestion = new Label("If it's a routine event, are the beginning and/or end times typical?");
 		    boundaryQuestion.setWidth(boundaryWidth - 50 + "px");
@@ -1029,22 +1062,116 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		    boundaryPanel.add(boundaryQuestion);
 		    boundaryPanel.add(checkBoxBegin);
 		    boundaryPanel.add(checkBoxEnd);
-		    actEventPanel.add(boundaryPanel);
+		    appEventPanel.add(boundaryPanel);
+		    
+		    VerticalPanel whichPanel = new VerticalPanel();		    
+		    Label whichQuestion = new Label("If it's a routine event, which of the apps are typically part of it?");
+		    whichQuestion.setWidth(boundaryWidth - 50 + "px");
+		    whichPanel.add(whichQuestion);
+//		    List<String> appCheckBoxes = new ArrayList<String>();
+		    for (String app : ei.getApps())
+		    {
+		    	CheckBox cb = new CheckBox(app);
+//		    	appCheckBoxes.add(cb);
+		    	whichPanel.add(cb);
+		    }
+
+		    whichPanel.setWidth(boundaryWidth + "px");
+		    
+		    appEventPanel.add(whichPanel);
 			
 			Label otherQuestions = new Label("Are there any problems with this event as detected?");
 			VerticalPanel otherPanel = new VerticalPanel();
+			otherPanel.add(otherQuestions);
 			TextArea textbox = new TextArea();
 			textbox.setWidth(otherWidth + "px");
 	//		textbox.setHeight(200 + "px");
 	//		textbox.setAlignment(TextAlignment.LEFT);
 			textbox.setVisibleLines(10);
-			otherPanel.add(otherQuestions);
+			
 			otherPanel.setWidth(otherWidth + "px");
 			otherPanel.add(textbox);
-			actEventPanel.add(otherPanel);
+			appEventPanel.add(otherPanel);
 			
-			actEventPanel.setHeight(eventHeight + "px");
-			panel.add(actEventPanel);
+			appEventPanel.setHeight(eventHeight + "px");
+			panel.add(appEventPanel);
+		}
+	}
+	
+	public void showSMSEvent(final List<EventInfo> mdata, VerticalPanel panel, Map<String, String> colorMap) {
+		for (EventInfo ei : mdata)
+		{
+			HorizontalPanel smsEventPanel = new HorizontalPanel();
+			String htmlStr = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 40pt'>"+ SafeHtmlUtils.htmlEscape(ei.getEventLabel())+"</span>"; 
+			String htmlStr2 = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+ prettyTime(ei.getDate(), (int)ei.getDuration())+"</span>";
+			
+			HTML html = new HTML(htmlStr);
+			HTML html2 = new HTML(htmlStr2);
+//			HTML label2 = new HTML(new SafeHtmlBuilder().appendEscapedLines("<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+
+//			SafeHtmlUtils.htmlEscape(ei.getEventLabel()) + "<br />" + SafeHtmlUtils.htmlEscape(prettyTime(ei.getDate(), (int)ei.getDuration()) + "")+"</span>").toSafeHtml());
+			Label smsLabel = html;
+			Label smsLabel2 = html2;
+			smsLabel.setWidth(labeledLabelWidth + "px");
+			smsLabel2.setWidth(labeledLabelWidth + "px");
+			VerticalPanel labelPanel = new VerticalPanel();
+			labelPanel.add(html);
+			labelPanel.add(html2);
+			
+			smsEventPanel.add(labelPanel);
+
+			Label routineQuestion = new Label("Is this a typical event in your routine?");
+			routineQuestion.setWidth(routineWidth + "px");
+			RadioButton radioButtonYes = new RadioButton("smsRoutineGroup"+ ei.getEventLabel(), "Yes");
+		    RadioButton radioButtonNo = new RadioButton("smsRoutineGroup"+ ei.getEventLabel(), "No");
+		    VerticalPanel routinePanel = new VerticalPanel();
+		    routinePanel.add(routineQuestion);
+		    routinePanel.add(radioButtonYes);
+		    routinePanel.add(radioButtonNo);
+		    smsEventPanel.add(routinePanel);
+		    
+		    Label boundaryQuestion = new Label("If it's a routine event, are the beginning and/or end times typical?");
+		    boundaryQuestion.setWidth(boundaryWidth - 50 + "px");
+		    
+		    CheckBox checkBoxBegin = new CheckBox("Beginning");
+		    CheckBox checkBoxEnd = new CheckBox("End");
+		    VerticalPanel boundaryPanel = new VerticalPanel();
+		    boundaryPanel.setWidth(boundaryWidth + "px");
+		    boundaryPanel.add(boundaryQuestion);
+		    boundaryPanel.add(checkBoxBegin);
+		    boundaryPanel.add(checkBoxEnd);
+		    smsEventPanel.add(boundaryPanel);
+		    
+//		    VerticalPanel whichPanel = new VerticalPanel();		    
+//		    Label whichQuestion = new Label("If it's a routine event, which of the apps are typically part of it?");
+//		    whichQuestion.setWidth(boundaryWidth - 50 + "px");
+//		    whichPanel.add(whichQuestion);
+////		    List<String> appCheckBoxes = new ArrayList<String>();
+//		    for (String app : ei.getApps())
+//		    {
+//		    	CheckBox cb = new CheckBox(app);
+////		    	smsCheckBoxes.add(cb);
+//		    	whichPanel.add(cb);
+//		    }
+//
+//		    whichPanel.setWidth(boundaryWidth + "px");
+		    
+//		    appEventPanel.add(whichPanel);
+			
+			Label otherQuestions = new Label("Are there any problems with this event as detected?");
+			VerticalPanel otherPanel = new VerticalPanel();
+			otherPanel.add(otherQuestions);
+			TextArea textbox = new TextArea();
+			textbox.setWidth(otherWidth + "px");
+	//		textbox.setHeight(200 + "px");
+	//		textbox.setAlignment(TextAlignment.LEFT);
+			textbox.setVisibleLines(10);
+			
+			otherPanel.setWidth(otherWidth + "px");
+			otherPanel.add(textbox);
+			smsEventPanel.add(otherPanel);
+			
+			smsEventPanel.setHeight(eventHeight + "px");
+			panel.add(smsEventPanel);
 		}
 	}
 
@@ -1161,7 +1288,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	int mapWidth = 200;
 	int eventHeight = 250;
 	int otherWidth = 200;
-	int labeledLabelWidth = 120;
+	int labeledLabelWidth = 150;
 	
 	private void drawLocationIDOnMap(final EventInfo ei, VerticalPanel panel, Map<String, String> locColors, String name) {
 		// Clear any previous data points    
@@ -1210,13 +1337,31 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			}
 //		}
 //			String name = 
-			Label locLabel = new Label(ei.getEventLabel());
-			String htmlStr = "<span style='color: "+ locColors.get(ei.getEventLabel())  +"; font-size: 20pt'>"+SafeHtmlUtils.htmlEscape(ei.getEventLabel())+"</span>";
+//			Label locLabel = new Label(ei.getEventLabel());
+			
+			
+			
+			String htmlStr = "<span style='color: "+ locColors.get(ei.getEventLabel())  +"; font-size: 40pt'>"+SafeHtmlUtils.htmlEscape(ei.getEventLabel())+"</span>";
+
+			String htmlStr2 = "<span style='color: "+ locColors.get(ei.getEventLabel())  +"; font-size: 20pt'>"+ prettyTime(ei.getDate(), (int)ei.getDuration())+"</span>";
 			HTML html = new HTML(htmlStr);
-			locLabel = html;
+			HTML html2 = new HTML(htmlStr2);
+			Label locLabel = html;
+			Label locLabel2 = html2;
+			locLabel.setWidth(labeledLabelWidth + "px");
+			locLabel2.setWidth(labeledLabelWidth + "px");
+			VerticalPanel labelPanel = new VerticalPanel();
+			labelPanel.add(html);
+			labelPanel.add(html2);
+			
+			
+//			HTML html = new HTML(htmlStr);
+			
+//			locLabel = html;
 			HorizontalPanel locEventPanel = new HorizontalPanel();
-			locLabel.setWidth(labelWidth + "px");
-			locEventPanel.add(locLabel);
+			locEventPanel.add(labelPanel);
+//			locLabel.setWidth(labelWidth + "px");
+//			locEventPanel.add(locLabel);
 //			eventPanel.add(new Label("sdfsdffdsfs "));
 			MapWidget locMapWidget = locationIDs.get(locationIDs.size() - 1);
 //			locMapWidget.set(mapWidthSpacing + "px");
@@ -1437,16 +1582,32 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			panels.add(appTitle);
 			panels.add(appViz);
 			VerticalPanel appPanel = new VerticalPanel();
-			showActivityEvent(mdataFinal.get(EventType.APP), appPanel, appColors);
+			showAppEvent(mdataFinal.get(EventType.APP), appPanel, appColors);
 			panels.add(appPanel);
 		}
 		if (smsViz != null)
 		{
+			String htmlStr = "<span style='font-size: 30pt'>SMS events</span>";
+			HTML html = new HTML(htmlStr);
+			Label smsTitle = html;
+			
+			panels.add(smsTitle);
 			panels.add(smsViz);
+			VerticalPanel smsPanel = new VerticalPanel();
+			showSMSEvent(mdataFinal.get(EventType.SMS), smsPanel, smsColors);
+			panels.add(smsPanel);
 		}
 		if (callViz != null)
 		{
+			String htmlStr = "<span style='font-size: 30pt'>Call events</span>";
+			HTML html = new HTML(htmlStr);
+			Label callTitle = html;
+			
+			panels.add(callTitle);
 			panels.add(callViz);
+			VerticalPanel callPanel = new VerticalPanel();
+//			showCallEvent(mdataFinal.get(EventType.SMS), callPanel, callColors);
+			panels.add(callPanel);
 		}
 //			panels.add(viz2);
 //		}
