@@ -803,7 +803,7 @@ public class AwDataTranslators {
 		return mobilityInfos;
 	}
 	
-	public static List<EventInfo> translateEventReadQueryJSONToEventInfoList(String eventReadQueryJSON) throws Exception {
+	public static List<EventInfo> translateEventReadQueryJSONToEventInfoList(String eventReadQueryJSON, Date date) throws Exception {
 		List<EventInfo> eventInfos = new ArrayList<EventInfo>(); // retval
 		
 		JSONValue value = JSONParser.parseStrict(eventReadQueryJSON);

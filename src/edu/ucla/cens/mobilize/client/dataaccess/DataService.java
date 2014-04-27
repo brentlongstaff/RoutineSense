@@ -445,6 +445,10 @@ public interface DataService {
                          String username,
                          AsyncCallback<List<EventInfo>> callback);
   
+  void storeFeedback(final String json,
+		  Date date,
+		  String username,
+          final AsyncCallback<String> callback);
   
   /**
    * Retrieves mobility data via mobility/read/chunked

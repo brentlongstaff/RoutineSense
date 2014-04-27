@@ -733,4 +733,11 @@ public void fetchEventData(Date date, String username,
 	
 }
 
+@Override
+public void storeFeedback(String json, Date date, String username,
+		AsyncCallback<String> callback) {
+	// TODO Auto-generated method stub
+	
+}
+
 }

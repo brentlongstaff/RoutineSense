@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.view;
 
+import java.awt.Checkbox;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -9,13 +10,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
 import com.google.gwt.canvas.dom.client.CssColor;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dev.jjs.ast.js.JsonObject;
 import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
@@ -27,6 +32,11 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.json.client.JSONBoolean;
+import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -35,6 +45,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -80,6 +91,7 @@ import edu.ucla.cens.mobilize.client.common.LocationStatus;
 import edu.ucla.cens.mobilize.client.common.MobilityMode;
 import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.EventInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
@@ -92,6 +104,7 @@ import edu.ucla.cens.mobilize.client.ui.MobilityVizDailySummary;
 import edu.ucla.cens.mobilize.client.ui.MobilityVizHistoricalAnalysis;
 import edu.ucla.cens.mobilize.client.ui.MobilityWidgetPopup;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup;
+import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.EventUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
@@ -926,6 +939,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 //		if (mapWidget == null) { // lazy init map, add responses when done
 		List<EventInfo> distinct = new ArrayList<EventInfo>();
 		List<String> seenLabels = new ArrayList<String>();
+		formData.put(EventType.LOCATION, new HashMap<String, ExploreDataViewImpl.EventFeedback>());
 		for (EventInfo m : mdata)
 //			if (!seenLabels.contains(m.getEventLabel()))
 			{
@@ -952,12 +966,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 //		}
 	}
 	
+//	List<RadioButton> acttypicals = new ArrayList<RadioButton>();
+	
 	public void showActivityEvent(final List<EventInfo> mdata, VerticalPanel panel, Map<String, String> colorMap) {
+		formData.put(EventType.ACTIVITY, new HashMap<String, ExploreDataViewImpl.EventFeedback>());
 		for (EventInfo ei : mdata)
 		{
 			HorizontalPanel actEventPanel = new HorizontalPanel();
 			String htmlStr = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 40pt'>"+SafeHtmlUtils.htmlEscape(ei.getEventLabel() + " (" + ei.getLabel() + ")")+"</span>";
-			String htmlStr2 = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+ prettyTime(ei.getDate(), (int)ei.getDuration())+"</span>";
+			String htmlStr2 = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+ prettyTimeRange(ei.getDate(), (int)ei.getDuration())+"</span>";
 			HTML html = new HTML(htmlStr);
 			HTML html2 = new HTML(htmlStr2);
 			Label actLabel = html;
@@ -973,6 +990,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			routineQuestion.setWidth(routineWidth + "px");
 			RadioButton radioButtonYes = new RadioButton("actRoutineGroup"+ ei.getEventLabel(), "Yes");
 		    RadioButton radioButtonNo = new RadioButton("actRoutineGroup"+ ei.getEventLabel(), "No");
+		    
+//		    EventType et = EventType.ACTIVITY;
+//		    if (!formData.containsKey(et))
+		    	
+		    
+		    
+//		    acttypicals.add(radioButtonYes);
+//		    acttypicals.add(radioButtonNo);
+		    
 		    VerticalPanel routinePanel = new VerticalPanel();
 		    routinePanel.add(routineQuestion);
 		    routinePanel.add(radioButtonYes);
@@ -1003,6 +1029,9 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			otherPanel.add(textbox);
 			actEventPanel.add(otherPanel);
 			
+			EventFeedback ef = new EventFeedback(EventType.ACTIVITY, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox);
+			formData.get(EventType.ACTIVITY).put(ei.getEventLabel(), ef);
+			
 			actEventPanel.setHeight(eventHeight + "px");
 			panel.add(actEventPanel);
 		}
@@ -1016,7 +1045,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			return "" + i;
 	}
 	
-	public static String prettyTime(Date start, int durationInSeconds)
+	public static String prettyTimeRange(Date start, int durationInSeconds)
 	{
 		StringBuffer strb = new StringBuffer();
 		int carry = durationInSeconds / 60 + start.getMinutes() >= 60 ? 1 : 0;
@@ -1024,12 +1053,21 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		return strb.toString();
 	}
 	
+	public static String prettyTime(Date start, int durationInSeconds)
+	{
+		StringBuffer strb = new StringBuffer();
+		int carry = durationInSeconds / 60 + start.getMinutes() >= 60 ? 1 : 0;
+		strb.append(start.getHours()+":"+ digitString(start.getMinutes()));
+		return strb.toString();
+	}
+	
 	public void showAppEvent(final List<EventInfo> mdata, VerticalPanel panel, Map<String, String> colorMap) {
+		formData.put(EventType.APP, new HashMap<String, ExploreDataViewImpl.EventFeedback>());
 		for (EventInfo ei : mdata)
 		{
 			HorizontalPanel appEventPanel = new HorizontalPanel();
 			String htmlStr = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 40pt'>"+ SafeHtmlUtils.htmlEscape(ei.getEventLabel())+"</span>"; 
-			String htmlStr2 = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+ prettyTime(ei.getDate(), (int)ei.getDuration())+"</span>";
+			String htmlStr2 = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+ prettyTimeRange(ei.getDate(), (int)ei.getDuration())+"</span>";
 			HTML html = new HTML(htmlStr);
 			HTML html2 = new HTML(htmlStr2);
 			Label appLabel = html;
@@ -1068,19 +1106,9 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		    Label whichQuestion = new Label("If it's a routine event, which of the apps are typically part of it?");
 		    whichQuestion.setWidth(boundaryWidth - 50 + "px");
 		    whichPanel.add(whichQuestion);
-//		    List<String> appCheckBoxes = new ArrayList<String>();
-		    for (String app : ei.getApps())
-		    {
-		    	CheckBox cb = new CheckBox(app);
-//		    	appCheckBoxes.add(cb);
-		    	whichPanel.add(cb);
-		    }
-
-		    whichPanel.setWidth(boundaryWidth + "px");
 		    
-		    appEventPanel.add(whichPanel);
-			
-			Label otherQuestions = new Label("Are there any problems with this event as detected?");
+		    
+		    Label otherQuestions = new Label("Are there any problems with this event as detected?");
 			VerticalPanel otherPanel = new VerticalPanel();
 			otherPanel.add(otherQuestions);
 			TextArea textbox = new TextArea();
@@ -1091,14 +1119,40 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			otherPanel.setWidth(otherWidth + "px");
 			otherPanel.add(textbox);
+		    
+			List<CheckBox> cbs = new ArrayList<CheckBox>();
+			EventFeedback ef = new EventFeedback(EventType.APP, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox);
+//		    List<String> appCheckBoxes = new ArrayList<String>();
+		    for (String app : ei.getApps())
+		    {
+		    	CheckBox cb = new CheckBox(app);
+//		    	appCheckBoxes.add(cb);
+		    	whichPanel.add(cb);
+		    	cbs.add(cb);
+		    }
+		    
+		    ef.setSpecifics(cbs);
+		    
+		    whichPanel.setWidth(boundaryWidth + "px");
+		    
+		    appEventPanel.add(whichPanel);
+			
+			
 			appEventPanel.add(otherPanel);
 			
 			appEventPanel.setHeight(eventHeight + "px");
+			
+			
+			
+			
+			formData.get(EventType.APP).put(ei.getEventLabel(), ef);
+			
 			panel.add(appEventPanel);
 		}
 	}
 	
 	public void showSMSEvent(final List<EventInfo> mdata, VerticalPanel panel, Map<String, String> colorMap) {
+		formData.put(EventType.SMS, new HashMap<String, ExploreDataViewImpl.EventFeedback>());
 		for (EventInfo ei : mdata)
 		{
 			HorizontalPanel smsEventPanel = new HorizontalPanel();
@@ -1171,7 +1225,93 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			smsEventPanel.add(otherPanel);
 			
 			smsEventPanel.setHeight(eventHeight + "px");
+			
+			EventFeedback ef = new EventFeedback(EventType.SMS, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox);
+			formData.get(EventType.SMS).put(ei.getEventLabel(), ef);
+			
 			panel.add(smsEventPanel);
+		}
+	}
+	
+	public void showCallEvent(final List<EventInfo> mdata, VerticalPanel panel, Map<String, String> colorMap) {
+		formData.put(EventType.CALL, new HashMap<String, ExploreDataViewImpl.EventFeedback>());
+		for (EventInfo ei : mdata)
+		{
+			HorizontalPanel callEventPanel = new HorizontalPanel();
+			String htmlStr = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 40pt'>"+ SafeHtmlUtils.htmlEscape(ei.getEventLabel())+"</span>"; 
+			String htmlStr2 = "<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+ prettyTime(ei.getDate(), (int)ei.getDuration())+"</span>";
+			
+			HTML html = new HTML(htmlStr);
+			HTML html2 = new HTML(htmlStr2);
+//			HTML label2 = new HTML(new SafeHtmlBuilder().appendEscapedLines("<span style='color: "+ colorMap.get(ei.getEventLabel())  +"; font-size: 20pt'>"+
+//			SafeHtmlUtils.htmlEscape(ei.getEventLabel()) + "<br />" + SafeHtmlUtils.htmlEscape(prettyTime(ei.getDate(), (int)ei.getDuration()) + "")+"</span>").toSafeHtml());
+			Label callLabel = html;
+			Label callLabel2 = html2;
+			callLabel.setWidth(labeledLabelWidth + "px");
+			callLabel2.setWidth(labeledLabelWidth + "px");
+			VerticalPanel labelPanel = new VerticalPanel();
+			labelPanel.add(html);
+			labelPanel.add(html2);
+			
+			callEventPanel.add(labelPanel);
+
+			Label routineQuestion = new Label("Is this a typical event in your routine?");
+			routineQuestion.setWidth(routineWidth + "px");
+			RadioButton radioButtonYes = new RadioButton("smsRoutineGroup"+ ei.getEventLabel(), "Yes");
+		    RadioButton radioButtonNo = new RadioButton("smsRoutineGroup"+ ei.getEventLabel(), "No");
+		    VerticalPanel routinePanel = new VerticalPanel();
+		    routinePanel.add(routineQuestion);
+		    routinePanel.add(radioButtonYes);
+		    routinePanel.add(radioButtonNo);
+		    callEventPanel.add(routinePanel);
+		    
+		    Label boundaryQuestion = new Label("If it's a routine event, are the beginning and/or end times typical?");
+		    boundaryQuestion.setWidth(boundaryWidth - 50 + "px");
+		    
+		    CheckBox checkBoxBegin = new CheckBox("Beginning");
+		    CheckBox checkBoxEnd = new CheckBox("End");
+		    VerticalPanel boundaryPanel = new VerticalPanel();
+		    boundaryPanel.setWidth(boundaryWidth + "px");
+		    boundaryPanel.add(boundaryQuestion);
+		    boundaryPanel.add(checkBoxBegin);
+		    boundaryPanel.add(checkBoxEnd);
+		    callEventPanel.add(boundaryPanel);
+		    
+//		    VerticalPanel whichPanel = new VerticalPanel();		    
+//		    Label whichQuestion = new Label("If it's a routine event, which of the apps are typically part of it?");
+//		    whichQuestion.setWidth(boundaryWidth - 50 + "px");
+//		    whichPanel.add(whichQuestion);
+////		    List<String> appCheckBoxes = new ArrayList<String>();
+//		    for (String app : ei.getApps())
+//		    {
+//		    	CheckBox cb = new CheckBox(app);
+////		    	smsCheckBoxes.add(cb);
+//		    	whichPanel.add(cb);
+//		    }
+//
+//		    whichPanel.setWidth(boundaryWidth + "px");
+		    
+//		    appEventPanel.add(whichPanel);
+			
+			Label otherQuestions = new Label("Are there any problems with this event as detected?");
+			VerticalPanel otherPanel = new VerticalPanel();
+			otherPanel.add(otherQuestions);
+			TextArea textbox = new TextArea();
+			textbox.setWidth(otherWidth + "px");
+	//		textbox.setHeight(200 + "px");
+	//		textbox.setAlignment(TextAlignment.LEFT);
+			textbox.setVisibleLines(10);
+			
+			otherPanel.setWidth(otherWidth + "px");
+			otherPanel.add(textbox);
+			callEventPanel.add(otherPanel);
+			
+			callEventPanel.setHeight(eventHeight + "px");
+			
+			EventFeedback ef = new EventFeedback(EventType.CALL, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox);
+			formData.get(EventType.CALL).put(ei.getEventLabel(), ef);
+			
+			panel.add(callEventPanel);
 		}
 	}
 
@@ -1288,7 +1428,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	int mapWidth = 200;
 	int eventHeight = 250;
 	int otherWidth = 200;
-	int labeledLabelWidth = 150;
+	int labeledLabelWidth = 170;
 	
 	private void drawLocationIDOnMap(final EventInfo ei, VerticalPanel panel, Map<String, String> locColors, String name) {
 		// Clear any previous data points    
@@ -1343,7 +1483,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			String htmlStr = "<span style='color: "+ locColors.get(ei.getEventLabel())  +"; font-size: 40pt'>"+SafeHtmlUtils.htmlEscape(ei.getEventLabel())+"</span>";
 
-			String htmlStr2 = "<span style='color: "+ locColors.get(ei.getEventLabel())  +"; font-size: 20pt'>"+ prettyTime(ei.getDate(), (int)ei.getDuration())+"</span>";
+			String htmlStr2 = "<span style='color: "+ locColors.get(ei.getEventLabel())  +"; font-size: 20pt'>"+ prettyTimeRange(ei.getDate(), (int)ei.getDuration())+"</span>";
 			HTML html = new HTML(htmlStr);
 			HTML html2 = new HTML(htmlStr2);
 			Label locLabel = html;
@@ -1406,6 +1546,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			locEventPanel.add(otherPanel);
 			
 			locEventPanel.setHeight(eventHeight + "px");
+			
+			EventFeedback ef = new EventFeedback(EventType.LOCATION, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox);
+			formData.get(EventType.LOCATION).put(ei.getEventLabel(), ef);
+			
 			panel.add(locEventPanel);
 			
 //		if (!locationIDs.get(locationIDs.size() - 1).isAttached()) gpanel.add(locationIDs.get(locationIDs.size() - 1));
@@ -1447,11 +1591,12 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	}
 	
 	@Override
-	public void showEventsWithTimeline(final List<EventInfo> mdataList) {
+	public void showEventsWithTimeline(final List<EventInfo> mdataList, final DataService dataService, final String username, final Date date) {
 		// hide previous plot, if any
 		clearPlot();
 		hideWaitIndicator();
-
+		this.username = username;
+		this.date = date;
 		final VerticalPanel panels = new VerticalPanel();
 		
 		final int interval = 5;	// minutes
@@ -1526,8 +1671,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		// Event identification thingies
 		// location
 		final HashMap<EventType, List<EventInfo>> mdataFinal = mdataAsLists;
+		formData = new HashMap<EventType, HashMap<String, EventFeedback>>();
 		
-		// TODO foreach
 		
 		
 		
@@ -1606,12 +1751,29 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			panels.add(callTitle);
 			panels.add(callViz);
 			VerticalPanel callPanel = new VerticalPanel();
-//			showCallEvent(mdataFinal.get(EventType.SMS), callPanel, callColors);
+			showCallEvent(mdataFinal.get(EventType.CALL), callPanel, callColors);
 			panels.add(callPanel);
 		}
 //			panels.add(viz2);
 //		}
 		plotContainer.add(panels);
+		VerticalPanel submitPanel = new VerticalPanel();
+		final Button submitBtn = new Button("Submit");
+		submitBtn.setHeight("100px");
+		submitBtn.setWidth("300px");
+		String htmlStr = "<span style='font-size: 20pt'>Submit your responses by clicking the button and wait for confirmation</span>";
+		Label confirmationLabel = new HTML("<span style='font-size: 20pt'></span>");
+		Label submitLabel = new HTML(htmlStr);
+		submitLabel.setHeight("30px");
+		
+
+		confirmationLabel.setHeight("30px");
+		submitBtn.addClickHandler(new MyClickHandler(confirmationLabel, dataService));
+		submitPanel.add(submitLabel);
+		submitPanel.add(submitBtn);
+		submitPanel.add(confirmationLabel);
+		plotContainer.add(submitPanel);
+		
 //		if (gpanel == null)
 //			gpanel = new HorizontalPanel();
 		
@@ -1621,6 +1783,302 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	}
 //	final HorizontalPanel gpanel = new HorizontalPanel();
 
+	public class MyClickHandler implements ClickHandler {
+		public MyClickHandler(Label conf, DataService dataService)
+		{
+			this.conf = conf;
+			this.dataService = dataService;
+		}
+		private Label conf;
+		private DataService dataService;
+		@Override
+		   public void onClick(ClickEvent event) {
+		      recordFeedbackJSON(conf, dataService);
+		      
+		   }
+		}
+	
+	private class EventFeedback
+	{
+		private CheckBox begin = null;
+		private CheckBox end = null;
+		private RadioButton typical = null;
+		private RadioButton atypical = null;
+		private TextArea other = null;
+		private List<CheckBox> specifics = null;
+		private EventType type;
+		private String id;
+		public EventFeedback(EventType type, String id, RadioButton radioButtonYes,
+				RadioButton radioButtonNo, CheckBox checkBoxBegin,
+				CheckBox checkBoxEnd, TextArea textbox) {
+			this.type = type;
+			this.id = id;
+			this.typical = radioButtonYes;
+			this.atypical = radioButtonNo;
+			this.begin = checkBoxBegin;
+			this.end = checkBoxEnd;
+			this.other = textbox;
+			
+		}
+		public HashMap<String, Boolean> getSpecifics() 
+		{
+			HashMap<String, Boolean> cm = new HashMap<String, Boolean>();
+			for (CheckBox c : specifics)
+			{
+				cm.put(c.getText(), c.getValue());
+			}
+			return cm;
+		}
+		public void setSpecifics(List<CheckBox> specifics) 
+		{
+			this.specifics = specifics;
+		}
+		
+		//		private boolean typical;
+//		private boolean begin;
+//		private boolean end;
+//		private String other;
+		public Boolean isTypical() {
+			if (typical != null)
+			{
+				if (typical.getValue() && !atypical.getValue())
+					return true;
+				if (!typical.getValue() && atypical.getValue())
+					return false;
+			}
+			
+			return null;
+		}
+		public void setTypicalRadioButtons(RadioButton typical, RadioButton atypical) {
+			this.typical = typical;
+			this.atypical = atypical;
+		}
+		public Boolean isBegin() {
+			if (begin == null)
+				return null;
+			else return begin.getValue();
+		}
+		public void setBegin(CheckBox begin) {
+			this.begin = begin;
+		}
+		public Boolean isEnd() {
+			if (end == null)
+				return null;
+			else return end.getValue();
+		}
+		public void setEnd(CheckBox end) {
+			this.end = end;
+		}
+		public String getOther() {
+			if (other == null || other.getText().length() > 0)
+				return null;
+			return other.getText();
+		}
+		public void setOther(TextArea other) {
+			this.other = other;
+			
+		}
+		
+		public EventType getType() {
+			return type;
+		}
+		public void setType(EventType type) {
+			this.type = type;
+		}
+		public String getId() {
+			return id;
+		}
+		public void setId(String id) {
+			this.id = id;
+		}
+		public String toJSON()
+		{
+			StringBuffer json = new StringBuffer();
+			json.append("{ \"type\" : ");
+			json.append("\"" + getType() + "\"");
+			json.append(", \"id\" : ");
+			json.append("\"" + getId() + "\"");
+			if (this.isTypical() != null)
+			{
+				json.append("\", \"typical\" : ");
+				json.append(this.isTypical() ? "true" : "false");
+			}
+			if (isBegin() != null && isEnd() != null && (isBegin() || isEnd()))
+			{
+				json.append(", \"begin\" : ");
+				json.append(isBegin() ? "true" : "false");
+			}
+			if (isBegin() != null && isEnd() != null && (isBegin() || isEnd()))
+			{
+				json.append(", \"end\" : ");
+				json.append(isEnd() ? "true" : "false");
+			}
+			if (getOther() != null && getOther().length() > 0)
+			{
+				json.append(", \"other\" : ");
+				json.append("\"" + getOther() + "\"");
+			}
+			boolean useSpecs = false;
+			if (specifics != null)
+			{
+				for (CheckBox cb : specifics)
+					if (cb.getValue())
+					{
+						useSpecs = true;
+						break;
+					}
+			}
+			if (useSpecs)
+			{
+				HashMap<String, Boolean> specs = getSpecifics();
+				if (specs.size() > 0)
+				{
+					boolean first = true;
+					json.append("{ ");
+					for (String s : specs.keySet())
+					{
+						if (!first)
+							json.append(", ");
+						json.append("\"" + s + "\" : " + (specs.get(s) ? "true" : "false"));
+						first = false;
+					}
+					json.append(" }");
+				}
+			}
+			json.append(" }");
+			
+			return json.toString();
+		}
+		public boolean hasData() {
+			if (this.isTypical() != null)
+			{
+				return true;
+			}
+			if (isBegin() != null && isEnd() != null && (isBegin() || isEnd()))
+			{
+				return true;
+			}
+			if (isBegin() != null && isEnd() != null && (isBegin() || isEnd()))
+			{
+				return true;
+			}
+			if (getOther() != null && getOther().length() > 0)
+			{
+				return true;
+			}
+			if (specifics == null)
+				return false;
+			for (CheckBox cb : specifics)
+				if (cb.getValue())
+					return true;
+			return false;
+		}
+	}
+//	DataService dataService;
+	private HashMap<EventType, HashMap<String, EventFeedback>> formData;
+	String username;
+	Date date;
+	private void recordFeedbackJSON(final Label conf, DataService dataService)
+	{
+		StringBuffer toDisplay = new StringBuffer();
+		toDisplay.append("{ ");
+//		EventType [] types = new EventType [] { EventType.ACTIVITY, EventType.APP, EventType.CALL, EventType.LOCATION, EventType.SMS };
+		boolean first = true;
+		for (EventType type : formData.keySet())
+		{
+			boolean hasData = false;
+			StringBuffer typeString = new StringBuffer();
+			if (/*formData.containsKey(type) && */formData.get(type).size() > 0)
+			{
+				if (!first)
+					typeString.append(", ");
+				
+				typeString.append("\"" + type + "\" : { ");
+				
+				boolean firstId = true;
+				
+				for (String id : formData.get(type).keySet())
+				{
+					EventFeedback ef = formData.get(type).get(id);
+					if (ef.hasData())
+					{
+						hasData = true;
+						if (!firstId)
+							typeString.append(", ");
+						typeString.append("\"" + id + "\" : ");
+						
+						typeString.append(ef.toJSON());
+						firstId = false;
+					}
+				}
+				typeString.append(" }");
+				if (hasData)
+					first = false;
+			}
+			if (hasData)
+				toDisplay.append(typeString.toString());
+		}
+		
+		toDisplay.append(" }");
+//		if (toDisplay.length() <= 4)
+//			Window.alert("No data entered");
+//		else
+//			Window.alert(toDisplay.toString());
+		dataService.storeFeedback(toDisplay.toString(),
+				date,
+				username,
+				new AsyncCallback<String>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						AwErrorUtils.logoutIfAuthException(caught);
+						
+						// Save an empty new List to indicate no data
+//						List<EventInfo> buffer = new ArrayList<EventInfo>();
+//						fetchedData.set(indexToFill, buffer);
+
+//						_logger.severe(caught.getMessage());
+
+						// Check if we got absolutely no data
+//						boolean finishedAndGotNoData = true;
+//						for (int j = 0; j < fetchedData.size(); j++) {
+//							if (fetchedData.get(j) != null && fetchedData.get(j).isEmpty() == false) {
+//								finishedAndGotNoData = false;
+//								break;
+//							}
+//						}
+//						if (finishedAndGotNoData)
+//							ErrorDialog.show("Unable to retrieve event data with the selected parameters", caught.getMessage());
+						conf.setText("An error occurred. Please report it and try again in a minute.");
+					}
+
+					@Override
+					public void onSuccess(String result) {	//FIXME
+						// Save the results list
+//						List<EventInfo> buffer = new ArrayList<EventInfo>();
+//						buffer.addAll(result);
+//						fetchedData.set(indexToFill, buffer);
+//
+//						// Check if all synchronized
+//						for (int j = 0; j < fetchedData.size(); j++) {
+//							if (fetchedData.get(j) == null) {
+//								_logger.fine("Waiting for async #" + Integer.toString(j) + " to finish.");
+//								return;
+//							}
+//						}
+						conf.setText("Success!");
+//						// show responses on map
+//						List<EventInfo> flattened = new ArrayList<EventInfo>();
+//						for (List<EventInfo> l : fetchedData)
+//							flattened.addAll(l);
+//						view.showEventsWithTimeline(flattened);
+//						view.hideWaitIndicator();
+					}
+
+					
+				}
+				);
+	}
+	
 	@Override
 	public void showMobilityHistoricalAnalysis(List<List<MobilityInfo>> multiDayMobilityDataList) {
 		MobilityVizHistoricalAnalysis widget = new MobilityVizHistoricalAnalysis(multiDayMobilityDataList);

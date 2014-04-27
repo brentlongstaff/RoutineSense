@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SourcesTreeEvents;
 
 import edu.ucla.cens.mobilize.client.common.PlotType;
+import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.EventInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
@@ -116,5 +117,5 @@ public interface ExploreDataView extends IsWidget {
 	void clearMissingFieldMarkers();
 
 	void doExportCsvFormPost(String url, Map<String, String> params);
-	void showEventsWithTimeline(List<EventInfo> mdataList);
+	void showEventsWithTimeline(List<EventInfo> mdataList, final DataService dataService, String username, Date date);
 }

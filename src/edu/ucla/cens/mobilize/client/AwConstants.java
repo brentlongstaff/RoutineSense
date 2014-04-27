@@ -81,6 +81,8 @@ public class AwConstants {
      MOBILITY_READ("/app/mobility/read"),
      MOBILITY_READ_CHUNKED("/app/mobility/read/chunked"),
      MOBILITY_DATES_READ("/app/mobility/dates/read"),
+     EVENT_FEEDBACK_WRITE("/app/event/feedback/write"),
+     EVENT_READ("/app/event/read"),
      WHO_AM_I("/app/user/whoami");
      
      private AwUri(String uri) {
@@ -267,6 +269,18 @@ public class AwConstants {
     
     public static String getMobilityReadChunkedUrl() {
       return getServerLocation() + AwUri.MOBILITY_READ_CHUNKED;
+    }
+    
+    public static String getEventFeedbackSaveUrl() {
+    	return getServerLocation() + AwUri.EVENT_FEEDBACK_WRITE;
+    }
+    
+    public static String getEventReadUrl() {
+    	return getServerLocation() + AwUri.EVENT_READ;
+    }
+    
+    public static String getEventsUrl() {
+    	return getServerLocation() + AwUri.EVENT_READ;
     }
     
     public static String getMobilityDatesReadUrl() {

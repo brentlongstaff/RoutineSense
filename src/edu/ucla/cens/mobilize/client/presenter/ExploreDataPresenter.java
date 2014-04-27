@@ -175,7 +175,7 @@ public class ExploreDataPresenter implements Presenter {
 			fetchAndShowLeaderBoard(selectedCampaign, startDate, endDate);
 		} else if (PlotType.EVENT_DASHBOARD.equals(selectedPlotType)) {
 			// Case 7: Events for the day
-			fetchEventDataAndShowRoutineEvents(selectedParticipant, startDate, endDate);
+			fetchEventDataAndShowRoutineEvents(selectedParticipant, startDate, endDate, dataService);
 		} else {
 			// ELSE: R viz plot
 			showPlot();
@@ -293,7 +293,7 @@ public class ExploreDataPresenter implements Presenter {
 		}
 	}
 
-	private void fetchEventDataAndShowRoutineEvents(final String username, final Date startDate, final Date endDate) {
+	private void fetchEventDataAndShowRoutineEvents(final String username, final Date startDate, final Date endDate, final DataService dataService) {
 		view.showWaitIndicator();
 
 		// Create a list of Lists for synchronization
@@ -352,7 +352,7 @@ public class ExploreDataPresenter implements Presenter {
 							List<EventInfo> flattened = new ArrayList<EventInfo>();
 							for (List<EventInfo> l : fetchedData)
 								flattened.addAll(l);
-							view.showEventsWithTimeline(flattened);
+							view.showEventsWithTimeline(flattened, dataService, username, startDate);
 							view.hideWaitIndicator();
 						}
 					}
