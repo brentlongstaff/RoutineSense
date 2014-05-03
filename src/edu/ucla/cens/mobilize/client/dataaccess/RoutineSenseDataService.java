@@ -183,29 +183,29 @@ public class RoutineSenseDataService implements DataService {
 	_logger.fine("store event feedback with params: " + postParams);
 	final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getEventFeedbackSaveUrl());
 	try {
-	requestBuilder.sendRequest(postParams, new RequestCallback() {
-	@Override
-	public void onResponseReceived(Request request, Response response) {          
-	try {
-	getResponseTextOrThrowException(requestBuilder, response);
-	// no exception thrown? then it was a success
-	callback.onSuccess("Data saved successfully");
-	} catch (Exception exception) {
-	_logger.severe(exception.getMessage());
-	callback.onFailure(exception);
-	}
+		requestBuilder.sendRequest(postParams, new RequestCallback() {
+		@Override
+			public void onResponseReceived(Request request, Response response) {          
+				try {
+					getResponseTextOrThrowException(requestBuilder, response);
+					// no exception thrown? then it was a success
+					callback.onSuccess("Data saved successfully");
+				} catch (Exception exception) {
+					_logger.severe(exception.getMessage());
+					callback.onFailure(exception);
+				}
 	
-	}
+			}
 	
-	@Override
-	public void onError(Request request, Throwable exception) {
-	_logger.severe(exception.getMessage());
-	callback.onFailure(exception);
-	}
-	});
+			@Override
+			public void onError(Request request, Throwable exception) {
+				_logger.severe(exception.getMessage());
+				callback.onFailure(exception);
+			}
+		});
 	} catch (RequestException e) {
-	_logger.severe(e.getMessage());
-	throw new ServerException("Cannot contact server.");
+		_logger.severe(e.getMessage());
+		throw new ServerException("Cannot contact server.");
 	}
 }
   

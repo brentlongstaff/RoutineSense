@@ -1029,7 +1029,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			otherPanel.add(textbox);
 			actEventPanel.add(otherPanel);
 			
-			EventFeedback ef = new EventFeedback(EventType.ACTIVITY, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox);
+			EventFeedback ef = new EventFeedback(EventType.ACTIVITY, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
 			formData.get(EventType.ACTIVITY).put(ei.getEventLabel(), ef);
 			
 			actEventPanel.setHeight(eventHeight + "px");
@@ -1121,7 +1121,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			otherPanel.add(textbox);
 		    
 			List<CheckBox> cbs = new ArrayList<CheckBox>();
-			EventFeedback ef = new EventFeedback(EventType.APP, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox);
+			EventFeedback ef = new EventFeedback(EventType.APP, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
 //		    List<String> appCheckBoxes = new ArrayList<String>();
 		    for (String app : ei.getApps())
 		    {
@@ -1226,7 +1226,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			smsEventPanel.setHeight(eventHeight + "px");
 			
-			EventFeedback ef = new EventFeedback(EventType.SMS, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox);
+			EventFeedback ef = new EventFeedback(EventType.SMS, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
 			formData.get(EventType.SMS).put(ei.getEventLabel(), ef);
 			
 			panel.add(smsEventPanel);
@@ -1308,7 +1308,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			callEventPanel.setHeight(eventHeight + "px");
 			
-			EventFeedback ef = new EventFeedback(EventType.CALL, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox);
+			EventFeedback ef = new EventFeedback(EventType.CALL, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
 			formData.get(EventType.CALL).put(ei.getEventLabel(), ef);
 			
 			panel.add(callEventPanel);
@@ -1547,7 +1547,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			locEventPanel.setHeight(eventHeight + "px");
 			
-			EventFeedback ef = new EventFeedback(EventType.LOCATION, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox);
+			EventFeedback ef = new EventFeedback(EventType.LOCATION, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
 			formData.get(EventType.LOCATION).put(ei.getEventLabel(), ef);
 			
 			panel.add(locEventPanel);
@@ -1808,9 +1808,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		private List<CheckBox> specifics = null;
 		private EventType type;
 		private String id;
+		private EventInfo ei;
 		public EventFeedback(EventType type, String id, RadioButton radioButtonYes,
 				RadioButton radioButtonNo, CheckBox checkBoxBegin,
-				CheckBox checkBoxEnd, TextArea textbox) {
+				CheckBox checkBoxEnd, TextArea textbox, EventInfo ei) {
 			this.type = type;
 			this.id = id;
 			this.typical = radioButtonYes;
@@ -1818,7 +1819,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			this.begin = checkBoxBegin;
 			this.end = checkBoxEnd;
 			this.other = textbox;
-			
+			this.ei = ei;
 		}
 		public HashMap<String, Boolean> getSpecifics() 
 		{
@@ -2020,10 +2021,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		}
 		
 		toDisplay.append(" }");
-//		if (toDisplay.length() <= 4)
-//			Window.alert("No data entered");
-//		else
-//			Window.alert(toDisplay.toString());
+		if (toDisplay.length() <= 4)
+			Window.alert("No data entered");
+		else
+			Window.alert(toDisplay.toString());
 		dataService.storeFeedback(toDisplay.toString(),
 				date,
 				username,
