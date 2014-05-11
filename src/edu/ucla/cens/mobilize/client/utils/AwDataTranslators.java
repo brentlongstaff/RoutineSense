@@ -807,7 +807,9 @@ public class AwDataTranslators {
 		List<EventInfo> eventInfos = new ArrayList<EventInfo>(); // retval
 		
 		JSONValue value = JSONParser.parseStrict(eventReadQueryJSON);
-		JSONObject obj = value.isObject();
+		JSONObject obj1 = value.isObject();
+		if (obj1 == null || !obj1.containsKey("data")) throw new Exception("Invalid json format: " + eventReadQueryJSON);
+		JSONObject obj = obj1.get("data").isObject();
 		if (obj == null || !obj.containsKey("events_by_type")) throw new Exception("Invalid json format: " + eventReadQueryJSON);
 		JSONObject dataHash = obj.get("events_by_type").isObject();
 		if (dataHash == null) throw new Exception("dataHash has invalid json format.");

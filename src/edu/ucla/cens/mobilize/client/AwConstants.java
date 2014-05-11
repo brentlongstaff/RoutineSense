@@ -83,6 +83,7 @@ public class AwConstants {
      MOBILITY_DATES_READ("/app/mobility/dates/read"),
      EVENT_FEEDBACK_WRITE("/app/event/feedback/write"),
      EVENT_READ("/app/event/read"),
+     EVENT_FEEDBACK("/app/event/feedback"),
      WHO_AM_I("/app/user/whoami");
      
      private AwUri(String uri) {

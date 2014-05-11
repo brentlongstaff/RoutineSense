@@ -1048,7 +1048,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	public static String prettyTimeRange(Date start, int durationInSeconds)
 	{
 		StringBuffer strb = new StringBuffer();
-		int carry = durationInSeconds / 60 + start.getMinutes() >= 60 ? 1 : 0;
+		int carry = (durationInSeconds / 60) % 60 + start.getMinutes() >= 60 ? 1 : 0;
 		strb.append(start.getHours()+":"+ digitString(start.getMinutes())+" - " + (start.getHours() + durationInSeconds/3600 + carry) + ":" + digitString((start.getMinutes() + durationInSeconds/60) % 60));
 		return strb.toString();
 	}
@@ -1653,7 +1653,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		buckets.get(EventType.CALL).addAll(EventUtils.bucketByInterval(mdataAsLists.get(EventType.CALL), interval));
 		
 		DateTimeFormat format = DateTimeFormat.getFormat("EEEE, MMMM dd, yyyy");
-		String day_str = format.format(DateUtils.addDays(getFromDate(), 1));
+		String day_str = format.format(getFromDate());//DateUtils.addDays(getFromDate(), 1));
 		Label date_label = new Label(day_str);
 		panels.add(date_label);
 		Map<String, String> locColors = EventUtils.getEventColorMap(labelMaps.get(EventType.LOCATION));

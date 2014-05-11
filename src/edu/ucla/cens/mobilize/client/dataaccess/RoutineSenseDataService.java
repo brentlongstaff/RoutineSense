@@ -232,7 +232,7 @@ public class RoutineSenseDataService implements DataService {
 	String postParams = MapUtils.translateToParameters(params);
 	_logger.fine("Fetching mobility data with params " + postParams);
 
-	final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getMobilityReadUrl());
+	final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getEventReadUrl());
 	try {
 		requestBuilder.sendRequest(postParams, new RequestCallback() {
 			@Override
