@@ -1922,12 +1922,16 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			boolean useSpecs = false;
 			if (specifics != null)
 			{
+//				HashMap<String, Boolean> specs = new HashMap<String, Boolean>();
 				for (CheckBox cb : specifics)
+				{
 					if (cb.getValue())
 					{
 						useSpecs = true;
 						break;
 					}
+//					specs.put()
+				}
 			}
 			if (useSpecs)
 			{
@@ -1935,7 +1939,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 				if (specs.size() > 0)
 				{
 					boolean first = true;
-					json.append("{ ");
+					json.append(", \"specifics\" : { ");
 					for (String s : specs.keySet())
 					{
 						if (!first)
