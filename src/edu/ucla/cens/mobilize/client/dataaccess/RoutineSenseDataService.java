@@ -85,6 +85,7 @@ public class RoutineSenseDataService implements DataService {
 
   String username;
   String authToken;
+  String json;
   String client = AwConstants.apiClientString;
   boolean isInitialized = false;
   
@@ -177,9 +178,11 @@ public class RoutineSenseDataService implements DataService {
 	final Map<String, String> params = new HashMap<String, String>();
 	params.put("auth_token", this.authToken);
 	params.put("client", this.client);
+	params.put("username", username);
 	params.put("data", json);
-	params.put("date", DateUtils.translateToApiRequestFormat(date));
-	String postParams = params.toString();
+//	params.put("testing", "testing123");
+//	params.put("date", DateUtils.translateToApiRequestFormat(date));
+	String postParams = MapUtils.translateToParameters(params);
 	_logger.fine("store event feedback with params: " + postParams);
 	final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getEventFeedbackSaveUrl());
 	try {
@@ -294,7 +297,8 @@ public class RoutineSenseDataService implements DataService {
         // Eval the response into JSON
         // (Hope this doesn't contain malicious JavaScript!)
         responseText = response.getText();
-        
+        if (responseText.contains("Missing"))
+        	responseText = responseText;
         // could throw JavaScriptException if server returns invalid JSON
         QueryAwData serverResponse = QueryAwData.fromJsonString(responseText); 
         String result = serverResponse.getResult();

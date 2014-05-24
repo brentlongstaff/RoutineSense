@@ -81,7 +81,7 @@ public class AwConstants {
      MOBILITY_READ("/app/mobility/read"),
      MOBILITY_READ_CHUNKED("/app/mobility/read/chunked"),
      MOBILITY_DATES_READ("/app/mobility/dates/read"),
-     EVENT_FEEDBACK_WRITE("/app/event/feedback/write"),
+//     EVENT_FEEDBACK_WRITE("/app/event/feedback"),
      EVENT_READ("/app/event/read"),
      EVENT_FEEDBACK("/app/event/feedback"),
      WHO_AM_I("/app/user/whoami");
@@ -273,7 +273,7 @@ public class AwConstants {
     }
     
     public static String getEventFeedbackSaveUrl() {
-    	return getServerLocation() + AwUri.EVENT_FEEDBACK_WRITE;
+    	return getServerLocation() + AwUri.EVENT_FEEDBACK;
     }
     
     public static String getEventReadUrl() {

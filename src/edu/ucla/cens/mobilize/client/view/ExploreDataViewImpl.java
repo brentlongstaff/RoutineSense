@@ -1805,6 +1805,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		private RadioButton typical = null;
 		private RadioButton atypical = null;
 		private TextArea other = null;
+		private String otherText = null;
 		private List<CheckBox> specifics = null;
 		private EventType type;
 		private String id;
@@ -1818,7 +1819,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			this.atypical = radioButtonNo;
 			this.begin = checkBoxBegin;
 			this.end = checkBoxEnd;
+			textbox.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			    @Override
+			    public void onValueChange(ValueChangeEvent<String> event) {
+			        EventFeedback.this.otherText=event.getValue();
+			    }
+			});
 			this.other = textbox;
+			
 			this.ei = ei;
 		}
 		public HashMap<String, Boolean> getSpecifics() 
@@ -1871,9 +1880,14 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			this.end = end;
 		}
 		public String getOther() {
-			if (other == null || other.getText().length() > 0)
+			if (otherText == null || otherText.length() == 0)
 				return null;
-			return other.getText();
+			else
+				return otherText;
+			
+//			if (other == null || other.getValue().length() > 0)
+//				return null;
+//			return other.getValue();
 		}
 		public void setOther(TextArea other) {
 			this.other = other;
@@ -1901,7 +1915,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			json.append("\"" + getId() + "\"");
 			if (this.isTypical() != null)
 			{
-				json.append("\", \"typical\" : ");
+				json.append(", \"typical\" : ");
 				json.append(this.isTypical() ? "true" : "false");
 			}
 			if (isBegin() != null && isEnd() != null && (isBegin() || isEnd()))
@@ -2028,7 +2042,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		if (toDisplay.length() <= 4)
 			Window.alert("No data entered");
 		else
+		{
+			conf.setText(toDisplay.toString());
 			Window.alert(toDisplay.toString());
+		}
 		dataService.storeFeedback(toDisplay.toString(),
 				date,
 				username,
