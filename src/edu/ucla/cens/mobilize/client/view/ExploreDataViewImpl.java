@@ -2044,6 +2044,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		else
 		{
 //			conf.setText(toDisplay.toString());
+			conf.setText("Please wait...");
 //			Window.alert(toDisplay.toString());
 		}
 		dataService.storeFeedback(toDisplay.toString(),
