@@ -2043,8 +2043,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			Window.alert("No data entered");
 		else
 		{
-			conf.setText(toDisplay.toString());
-			Window.alert(toDisplay.toString());
+//			conf.setText(toDisplay.toString());
+//			Window.alert(toDisplay.toString());
 		}
 		dataService.storeFeedback(toDisplay.toString(),
 				date,
