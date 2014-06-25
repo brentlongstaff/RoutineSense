@@ -1810,6 +1810,12 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		private EventType type;
 		private String id;
 		private EventInfo ei;
+		public EventInfo getEi() {
+			return ei;
+		}
+		public void setEi(EventInfo ei) {
+			this.ei = ei;
+		}
 		public EventFeedback(EventType type, String id, RadioButton radioButtonYes,
 				RadioButton radioButtonNo, CheckBox checkBoxBegin,
 				CheckBox checkBoxEnd, TextArea textbox, EventInfo ei) {
@@ -1913,6 +1919,36 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			json.append("\"" + getType() + "\"");
 			json.append(", \"id\" : ");
 			json.append("\"" + getId() + "\"");
+			// include details on event because they might be different later
+//			json.append(", \"label\" : ");
+//			json.append("\"" + getEi().getLabel() + "\"");
+//			json.append(", \"start\" : ");
+//			json.append(", \"timezone\" : ");
+//			json.append("\"" + getEi().getTimezone() + "\"");
+//			json.append("\"" + getEi().getDate() + "\"");
+//			json.append(", \"duration\" : ");
+//			json.append("\"" + getEi().getDuration() + "\"");
+//			
+//			try {
+//				if (getType().equals(EventType.LOCATION))
+//				{
+//					json.append(", \"latitude\" : ");
+//					json.append("\"" + getEi().getLatitude() + "\"");
+//					json.append(", \"longitude\" : ");
+//					json.append("\"" + getEi().getLongitude() + "\"");
+//				}
+//				
+//			}
+//			catch (Exception e)
+//			{}
+//			
+//			if (getType().equals(EventType.))
+			
+			// Just kidding, use original json string from the server
+			json.append(", \"event_json\" : ");
+			json.append(getEi().getEventJson());
+			
+			
 			if (this.isTypical() != null)
 			{
 				json.append(", \"typical\" : ");
@@ -1964,6 +2000,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 					json.append(" }");
 				}
 			}
+			
 			json.append(" }");
 			
 			return json.toString();
@@ -2037,14 +2074,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			if (hasData)
 				toDisplay.append(typeString.toString());
 		}
-		
-		toDisplay.append(" }");
+//		toDisplay.append(", { \"\" : ");
+//		toDisplay.append(eventJson);
+		toDisplay.append("}");
 		if (toDisplay.length() <= 4)
 			Window.alert("No data entered");
 		else
 		{
 //			conf.setText(toDisplay.toString());
-			conf.setText("Please wait...");
+			conf.setText("Please wait. Do NOT leave this page yet.");
 //			Window.alert(toDisplay.toString());
 		}
 		dataService.storeFeedback(toDisplay.toString(),
@@ -2088,7 +2126,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 //								return;
 //							}
 //						}
-						conf.setText("Success!");
+						conf.setText("Success! You may now close the browser.");
 //						// show responses on map
 //						List<EventInfo> flattened = new ArrayList<EventInfo>();
 //						for (List<EventInfo> l : fetchedData)

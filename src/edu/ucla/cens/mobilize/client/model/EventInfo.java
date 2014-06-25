@@ -16,7 +16,13 @@ public class EventInfo
 	String label;		// depends on the type, could be app name or collection of apps name or activity mode &c
 	String eventLabel;
 	// descriptors to describe events to users
-	
+	String eventJson;
+	public String getEventJson() {
+		return eventJson;
+	}
+	public void setEventJson(String eventJson) {
+		this.eventJson = eventJson;
+	}
 	public String getEventLabel() {
 		return eventLabel;
 	}
@@ -29,7 +35,7 @@ public class EventInfo
 	String direction;
 	ArrayList<String> apps;
 	
-
+	
 	EventType type;
 	public String getDirection() {
 		return direction;

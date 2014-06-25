@@ -825,6 +825,7 @@ public class AwDataTranslators {
 					EventDataPointAwData awData = (EventDataPointAwData)eventList.get(i).isObject().getJavaScriptObject();
 					JSONObject eventObject = eventList.get(i).isObject();
 					EventInfo evInfo = new EventInfo();
+					evInfo.setEventJson(eventList.get(i).toString());
 					evInfo.setType(EventType.fromServerString(type));
 					
 					evInfo.setDate(new Date(awData.getTime()));//new Date((long)eventObject.get("t").isNumber().doubleValue()));
