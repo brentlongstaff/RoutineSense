@@ -1462,7 +1462,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	
 	int labelWidth = 40;
 	int routineWidth = 250;
-	int correctWidth = 250;
+	int correctWidth = 175;
 	int boundaryWidth = 250;
 	int mapWidthSpacing = 230;
 	int mapWidth = 200;
