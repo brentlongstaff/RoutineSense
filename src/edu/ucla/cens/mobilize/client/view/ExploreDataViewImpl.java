@@ -986,6 +986,16 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			labelPanel.add(html2);
 			actEventPanel.add(labelPanel);
 
+			Label correctQuestion = new Label("Is this event correct?");
+			correctQuestion.setWidth(correctWidth + "px");
+			RadioButton radioButtonRight = new RadioButton("actCorrectGroup"+ ei.getEventLabel(), "Yes");
+		    RadioButton radioButtonWrong = new RadioButton("actCorrectGroup"+ ei.getEventLabel(), "No");
+		    VerticalPanel correctPanel = new VerticalPanel();
+		    correctPanel.add(correctQuestion);
+		    correctPanel.add(radioButtonRight);
+		    correctPanel.add(radioButtonWrong);
+		    actEventPanel.add(correctPanel);
+			
 			Label routineQuestion = new Label("Is this a typical event in your routine?");
 			routineQuestion.setWidth(routineWidth + "px");
 			RadioButton radioButtonYes = new RadioButton("actRoutineGroup"+ ei.getEventLabel(), "Yes");
@@ -1029,7 +1039,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			otherPanel.add(textbox);
 			actEventPanel.add(otherPanel);
 			
-			EventFeedback ef = new EventFeedback(EventType.ACTIVITY, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
+			EventFeedback ef = new EventFeedback(EventType.ACTIVITY, ei.getEventLabel(), radioButtonRight, radioButtonWrong, radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
 			formData.get(EventType.ACTIVITY).put(ei.getEventLabel(), ef);
 			
 			actEventPanel.setHeight(eventHeight + "px");
@@ -1079,6 +1089,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			labelPanel.add(html2);
 			appEventPanel.add(labelPanel);
 			
+			Label correctQuestion = new Label("Is this event correct?");
+			correctQuestion.setWidth(correctWidth + "px");
+			RadioButton radioButtonRight = new RadioButton("appCorrectGroup"+ ei.getEventLabel(), "Yes");
+		    RadioButton radioButtonWrong = new RadioButton("appCorrectGroup"+ ei.getEventLabel(), "No");
+		    VerticalPanel correctPanel = new VerticalPanel();
+		    correctPanel.add(correctQuestion);
+		    correctPanel.add(radioButtonRight);
+		    correctPanel.add(radioButtonWrong);
+		    appEventPanel.add(correctPanel);
 
 			Label routineQuestion = new Label("Is this a typical event in your routine?");
 			routineQuestion.setWidth(routineWidth + "px");
@@ -1121,7 +1140,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			otherPanel.add(textbox);
 		    
 			List<CheckBox> cbs = new ArrayList<CheckBox>();
-			EventFeedback ef = new EventFeedback(EventType.APP, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
+			EventFeedback ef = new EventFeedback(EventType.APP, ei.getEventLabel(), radioButtonRight, radioButtonWrong, radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
 //		    List<String> appCheckBoxes = new ArrayList<String>();
 		    for (String app : ei.getApps())
 		    {
@@ -1173,6 +1192,16 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			smsEventPanel.add(labelPanel);
 
+			Label correctQuestion = new Label("Is this event correct?");
+			correctQuestion.setWidth(correctWidth + "px");
+			RadioButton radioButtonRight = new RadioButton("smsCorrectGroup"+ ei.getEventLabel(), "Yes");
+		    RadioButton radioButtonWrong = new RadioButton("smsCorrectGroup"+ ei.getEventLabel(), "No");
+		    VerticalPanel correctPanel = new VerticalPanel();
+		    correctPanel.add(correctQuestion);
+		    correctPanel.add(radioButtonRight);
+		    correctPanel.add(radioButtonWrong);
+		    smsEventPanel.add(correctPanel);
+			
 			Label routineQuestion = new Label("Is this a typical event in your routine?");
 			routineQuestion.setWidth(routineWidth + "px");
 			RadioButton radioButtonYes = new RadioButton("smsRoutineGroup"+ ei.getEventLabel(), "Yes");
@@ -1226,7 +1255,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			smsEventPanel.setHeight(eventHeight + "px");
 			
-			EventFeedback ef = new EventFeedback(EventType.SMS, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
+			EventFeedback ef = new EventFeedback(EventType.SMS, ei.getEventLabel(), radioButtonRight, radioButtonWrong, radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
 			formData.get(EventType.SMS).put(ei.getEventLabel(), ef);
 			
 			panel.add(smsEventPanel);
@@ -1255,10 +1284,20 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			callEventPanel.add(labelPanel);
 
+			Label correctQuestion = new Label("Is this event correct?");
+			correctQuestion.setWidth(correctWidth + "px");
+			RadioButton radioButtonRight = new RadioButton("callCorrectGroup"+ ei.getEventLabel(), "Yes");
+		    RadioButton radioButtonWrong = new RadioButton("callCorrectGroup"+ ei.getEventLabel(), "No");
+		    VerticalPanel correctPanel = new VerticalPanel();
+		    correctPanel.add(correctQuestion);
+		    correctPanel.add(radioButtonRight);
+		    correctPanel.add(radioButtonWrong);
+		    callEventPanel.add(correctPanel);
+			
 			Label routineQuestion = new Label("Is this a typical event in your routine?");
 			routineQuestion.setWidth(routineWidth + "px");
-			RadioButton radioButtonYes = new RadioButton("smsRoutineGroup"+ ei.getEventLabel(), "Yes");
-		    RadioButton radioButtonNo = new RadioButton("smsRoutineGroup"+ ei.getEventLabel(), "No");
+			RadioButton radioButtonYes = new RadioButton("callRoutineGroup"+ ei.getEventLabel(), "Yes");
+		    RadioButton radioButtonNo = new RadioButton("callRoutineGroup"+ ei.getEventLabel(), "No");
 		    VerticalPanel routinePanel = new VerticalPanel();
 		    routinePanel.add(routineQuestion);
 		    routinePanel.add(radioButtonYes);
@@ -1308,7 +1347,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			callEventPanel.setHeight(eventHeight + "px");
 			
-			EventFeedback ef = new EventFeedback(EventType.CALL, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
+			EventFeedback ef = new EventFeedback(EventType.CALL, ei.getEventLabel(), radioButtonRight, radioButtonWrong, radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
 			formData.get(EventType.CALL).put(ei.getEventLabel(), ef);
 			
 			panel.add(callEventPanel);
@@ -1423,6 +1462,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	
 	int labelWidth = 40;
 	int routineWidth = 250;
+	int correctWidth = 250;
 	int boundaryWidth = 250;
 	int mapWidthSpacing = 230;
 	int mapWidth = 200;
@@ -1511,6 +1551,20 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			locEventPanel.add(mapPanel);
 			// form response
 //			eventPanel.add(new Label("           "));
+			Label correctQuestion = new Label("Is this event correct?");
+			correctQuestion.setWidth(correctWidth + "px");
+			RadioButton radioButtonRight = new RadioButton("correctGroup"+ ei.getEventLabel(), "Yes");
+		    RadioButton radioButtonWrong = new RadioButton("correctGroup"+ ei.getEventLabel(), "No");
+		    VerticalPanel correctPanel = new VerticalPanel();
+		    correctPanel.add(correctQuestion);
+		    correctPanel.add(radioButtonRight);
+		    correctPanel.add(radioButtonWrong);
+		    locEventPanel.add(correctPanel);
+		    
+//		    RadioButton radioButtonWrongLabel = new RadioButton("correctGroup"+ ei.getEventLabel(), "Wrong arrival time");
+//		    RadioButton radioButtonWrongLabel = new RadioButton("correctGroup"+ ei.getEventLabel(), "Wrong departure time");
+//		    RadioButton radioButtonWrongLabel = new RadioButton("correctGroup"+ ei.getEventLabel(), "Should be merged with another location");
+			
 			Label routineQuestion = new Label("Is this a typical event in your routine?");
 			routineQuestion.setWidth(routineWidth + "px");
 			RadioButton radioButtonYes = new RadioButton("routineGroup"+ ei.getEventLabel(), "Yes");
@@ -1547,7 +1601,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			locEventPanel.setHeight(eventHeight + "px");
 			
-			EventFeedback ef = new EventFeedback(EventType.LOCATION, ei.getEventLabel(), radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
+			EventFeedback ef = new EventFeedback(EventType.LOCATION, ei.getEventLabel(), radioButtonRight, radioButtonWrong, radioButtonYes, radioButtonNo, checkBoxBegin, checkBoxEnd, textbox, ei);
 			formData.get(EventType.LOCATION).put(ei.getEventLabel(), ef);
 			
 			panel.add(locEventPanel);
@@ -1804,6 +1858,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		private CheckBox end = null;
 		private RadioButton typical = null;
 		private RadioButton atypical = null;
+		private RadioButton right = null;
+		private RadioButton wrong = null;
 		private TextArea other = null;
 		private String otherText = null;
 		private List<CheckBox> specifics = null;
@@ -1816,13 +1872,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		public void setEi(EventInfo ei) {
 			this.ei = ei;
 		}
-		public EventFeedback(EventType type, String id, RadioButton radioButtonYes,
+		public EventFeedback(EventType type, String id, RadioButton radioButtonRight, RadioButton radioButtonWrong, RadioButton radioButtonYes,
 				RadioButton radioButtonNo, CheckBox checkBoxBegin,
 				CheckBox checkBoxEnd, TextArea textbox, EventInfo ei) {
 			this.type = type;
 			this.id = id;
 			this.typical = radioButtonYes;
 			this.atypical = radioButtonNo;
+			this.right = radioButtonRight;
+			this.wrong = radioButtonWrong;
 			this.begin = checkBoxBegin;
 			this.end = checkBoxEnd;
 			textbox.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -1868,6 +1926,22 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		public void setTypicalRadioButtons(RadioButton typical, RadioButton atypical) {
 			this.typical = typical;
 			this.atypical = atypical;
+		}
+		
+		public Boolean isRight() {
+			if (right != null)
+			{
+				if (right.getValue() && !wrong.getValue())
+					return true;
+				if (!right.getValue() && wrong.getValue())
+					return false;
+			}
+			
+			return null;
+		}
+		public void setRightRadioButtons(RadioButton right, RadioButton wrong) {
+			this.right = right;
+			this.wrong = wrong;
 		}
 		public Boolean isBegin() {
 			if (begin == null)
@@ -1948,7 +2022,11 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			json.append(", \"event_json\" : ");
 			json.append(getEi().getEventJson());
 			
-			
+			if (this.isRight() != null)
+			{
+				json.append(", \"correct\" : ");
+				json.append(this.isRight() ? "true" : "false");
+			}
 			if (this.isTypical() != null)
 			{
 				json.append(", \"typical\" : ");
@@ -2006,6 +2084,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			return json.toString();
 		}
 		public boolean hasData() {
+			if (this.isRight() != null)
+			{
+				return true;
+			}
 			if (this.isTypical() != null)
 			{
 				return true;
