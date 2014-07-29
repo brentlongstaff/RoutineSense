@@ -2045,7 +2045,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			if (getOther() != null && getOther().length() > 0)
 			{
 				json.append(", \"other\" : ");
-				json.append("\"" + getOther() + "\"");
+				json.append("\"" + getOther().replaceAll("[^a-zA-Z0-9\\.\\,]", "") + "\"");
 			}
 			boolean useSpecs = false;
 			if (specifics != null)
