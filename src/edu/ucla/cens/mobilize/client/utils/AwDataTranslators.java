@@ -1,6 +1,10 @@
 package edu.ucla.cens.mobilize.client.utils;
 
 import java.util.ArrayList;
+
+import com.google.gwt.i18n.client.TimeZone;
+import com.google.gwt.i18n.client.TimeZoneInfo;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +20,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Window;
 
 import edu.ucla.cens.mobilize.client.common.EventType;
 import edu.ucla.cens.mobilize.client.common.LocationStatus;
@@ -813,12 +818,14 @@ public class AwDataTranslators {
 		if (obj == null || !obj.containsKey("events_by_type")) throw new Exception("Invalid json format: " + eventReadQueryJSON);
 		JSONObject dataHash = obj.get("events_by_type").isObject();
 		if (dataHash == null) throw new Exception("dataHash has invalid json format.");
+		boolean first = true;
 		for (String type : dataHash.keySet()) // each event type
 		{
 			JSONArray eventList = dataHash.get(type).isArray();
 			if (eventList == null)
 				continue;
 			Map<EventType, Integer> indexes = new HashMap<EventType, Integer>();
+			
 			for (int i = 0; i < eventList.size(); i++) {
 				try {
 					//parse mobility array JSON
@@ -827,10 +834,55 @@ public class AwDataTranslators {
 					EventInfo evInfo = new EventInfo();
 					evInfo.setEventJson(eventList.get(i).toString());
 					evInfo.setType(EventType.fromServerString(type));
+					Date tzd = new Date(new Date(awData.getTime()).toLocaleString());//new Date();
+					Date lad = new Date(awData.getTime());
+					Date now = new Date();
+//					TimeZoneInfo tzi = 
+//					TimeZone tz = TimeZone.createTimeZone(timezoneData)
+					DateTimeFormat dtf = DateTimeFormat.getFormat("HH");
+//					if (first)
+//						Window.alert(now.getTimezoneOffset() + " " + lad.getTimezoneOffset() + " " + dtf.format(now) + " " + dtf.format(tzd) + " " + dtf.format(lad));
+					first = false;
+//					fastTime	1402466400000	
+					long millis = awData.getTime();
 					
-					evInfo.setDate(new Date(awData.getTime()));//new Date((long)eventObject.get("t").isNumber().doubleValue()));
+					long duration = 0;
+					Date d = new Date(millis);
+					Date eventDate = new Date(awData.getTime());
+					Date tomorrow = new Date (date.getTime() + 1000 * 60 * 60 * 24);
+					// remove any DST shenanigans.
+					if (tomorrow.getHours() > 22)
+						tomorrow = new Date (date.getTime() + 1000 * 60 * 60 * 26);
+					tomorrow.setHours(0);
+					if (eventDate.after(tomorrow)) // starts tomorrow
+						continue;
+					
+					if (eventObject.get("duration") != null)
+					{
+						duration = (long)eventObject.get("duration").isNumber().doubleValue();
+						
+						Date eventEnd = new Date(millis + 1000 * duration);
+						if (eventDate.before(date))
+						{
+							duration -= (date.getTime() - eventDate.getTime())/1000;
+							eventDate = date; // begin at midnight
+						}
+						if (eventEnd.before(date))
+							continue;
+						
+						if (eventEnd.after(tomorrow))
+						{
+							duration -= (eventEnd.getTime() - tomorrow.getTime())/1000;
+							eventEnd = tomorrow;
+							
+						}
+						 
+					}
+//					if (date.after(eventDate + new Date(date)))
+					evInfo.setDate(eventDate);//new Date((long)eventObject.get("t").isNumber().doubleValue()));
+					int hours = d.getHours();
 //					evInfo.setTimezone("America/Los Angeles"); // TODO make this get it from json
-					evInfo.setTimezone(eventObject.get("tz").isString().stringValue());
+					evInfo.setTimezone(eventObject.get("tz").isString().stringValue()); // this does nothing
 					if (!indexes.containsKey(evInfo.getType()))
 						indexes.put(evInfo.getType(), 0);
 					//mobInfo.setDate(DateUtils.translateFromServerFormat(awData.getTimestamp()));	//original
@@ -847,7 +899,7 @@ public class AwDataTranslators {
 //							MobilityLocationAwData l = awData.getLocation();
 							evInfo.setLatitude(eventObject.get("latitude").isNumber().doubleValue());
 							evInfo.setLongitude(eventObject.get("longitude").isNumber().doubleValue());
-							evInfo.setDuration((long)eventObject.get("duration").isNumber().doubleValue());
+							evInfo.setDuration(duration);//(long)eventObject.get("duration").isNumber().doubleValue());
 							evInfo.setLabel(eventObject.get("id").isString().stringValue());
 							
 //							evInfo.setLocationAccuracy(awData.getAccuracy());
@@ -856,22 +908,22 @@ public class AwDataTranslators {
 							break;
 						case ACTIVITY:
 							evInfo.setLabel(eventObject.get("activity").isString().stringValue());
-							evInfo.setDuration((long)eventObject.get("duration").isNumber().doubleValue());
+							evInfo.setDuration(duration);//(long)eventObject.get("duration").isNumber().doubleValue());
 							break;
 						case APP:
 //							evInfo.setLabel(eventObject.get("name").isString().stringValue());
-							evInfo.setDuration((long)eventObject.get("duration").isNumber().doubleValue());
+							evInfo.setDuration(duration);//(long)eventObject.get("duration").isNumber().doubleValue());
 							evInfo.setApps(parseApps(eventObject.get("name")));
 							evInfo.setLabel("apps"); // TODO get real id like from location
 							break;
 						case SMS:
 							evInfo.setLabel(eventObject.get("name").isString().stringValue());
 							evInfo.setDirection(eventObject.get("direction").isString().stringValue());
-							evInfo.setDuration((long)eventObject.get("duration").isNumber().doubleValue());
+							evInfo.setDuration(duration);//(long)eventObject.get("duration").isNumber().doubleValue());
 							break;
 						case CALL:
 							evInfo.setLabel(eventObject.get("name").isString().stringValue());
-							evInfo.setDuration((long)eventObject.get("duration").isNumber().doubleValue());
+							evInfo.setDuration(duration);//(long)eventObject.get("duration").isNumber().doubleValue());
 							evInfo.setDirection(eventObject.get("direction").isString().stringValue());
 							break;
 						default:

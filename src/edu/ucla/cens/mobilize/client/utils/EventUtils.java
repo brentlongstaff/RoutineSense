@@ -14,6 +14,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.CssColor;
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.core.java.util.Arrays;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -99,14 +100,16 @@ public class EventUtils {
 	 */
 	public static int getTimeInMinutes(Date date) {
 		int mod = 0;
-		boolean correcttz = false;
+		boolean correcttz = false; // some kind of weird hardcoded PST nonsense?
 		if (correcttz)
 		{
 			if (date.getHours() >= 17)
 				mod = -17;
 			else mod = 7;
 		}
-		return (60*date.getHours() + date.getMinutes()) + 60*mod;
+		int hours = date.getHours();
+		
+		return (60*hours + date.getMinutes()) + 60*mod;
 	}
 	
 //	public static Widget createLocationIDMapWidget(final double lat, final double lon)
@@ -658,8 +661,15 @@ public class EventUtils {
 					EventInfo m = data.get(curIndex);
 					
 					// Compute the day's mobility time in minutes
-					int curTimeInMin = getTimeInMinutes(m.getDate());
+					Date unzonedCurDate = m.getDate();
+					String timezone = m.getTimezone();
 					
+//					final String timezone = "GMT-07:00";
+//					DateTimeFormat dtf = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ssZZZZ");
+//					long local = dtf.parse(unzonedCurDate.toLocaleString()"2009-10-12T00:00:00" + timezone).getTime();
+					
+					int curTimeInMin = getTimeInMinutes(m.getDate());
+					 
 					int endTimeInMin = curTimeInMin + (int)m.getDuration() / 60;
 					// Check if the current mobility point is within the current interval
 					if (curTimeInMin < i * intervalInMinutes) 
